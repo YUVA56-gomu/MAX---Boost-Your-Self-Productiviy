@@ -98,12 +98,56 @@ All engineering activities, terminal executions, file modifications, and test ve
 - **Date & Time**: `2026-10-18T13:30:00+05:30`
 - **Milestone & Task**: `Milestone 1: Tasks 1.1 - 1.6 (Repository Foundation & Dual-Runtime Bootstrap)`
 - **User Action**: Explicit approval granted for Milestone 0: Project Governance & Workspace Preparation. Milestone 0 marked `COMPLETED`. Milestone 1 marked `IN_PROGRESS`.
-- **Plan for Session**:
-  1. Initialize Git repository and root `.gitignore`.
-  2. Resolve and verify frontend dependency versions (React, TypeScript, Vite, Tailwind CSS, shadcn/ui components).
-  3. Resolve and verify Python 3.14 backend dependencies (FastAPI, uvicorn, pydantic v2, pytest, httpx) using `uv`.
-  4. Scaffold frontend with Gemini-dark visual tokens.
-  5. Scaffold backend with versioned `/api/v1/health` and security CORS/loopback binding to `127.0.0.1`.
-  6. Configure unified development runner.
-  7. Execute builds, lints, type checks, and health tests.
+- **Files Created**:
+  - [`.gitignore`](file:///d:/SelfProductivityApp/.gitignore)
+  - [`package.json`](file:///d:/SelfProductivityApp/package.json)
+  - [`scripts/run-backend.ps1`](file:///d:/SelfProductivityApp/scripts/run-backend.ps1)
+  - [`scripts/dev.ps1`](file:///d:/SelfProductivityApp/scripts/dev.ps1)
+  - [`frontend/package.json`](file:///d:/SelfProductivityApp/frontend/package.json)
+  - [`frontend/vite.config.ts`](file:///d:/SelfProductivityApp/frontend/vite.config.ts)
+  - [`frontend/tsconfig.app.json`](file:///d:/SelfProductivityApp/frontend/tsconfig.app.json)
+  - [`frontend/src/index.css`](file:///d:/SelfProductivityApp/frontend/src/index.css)
+  - [`frontend/src/App.tsx`](file:///d:/SelfProductivityApp/frontend/src/App.tsx)
+  - [`frontend/src/App.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/App.test.tsx)
+  - [`frontend/src/test/setup.ts`](file:///d:/SelfProductivityApp/frontend/src/test/setup.ts)
+  - [`backend/pyproject.toml`](file:///d:/SelfProductivityApp/backend/pyproject.toml)
+  - [`backend/app/__init__.py`](file:///d:/SelfProductivityApp/backend/app/__init__.py)
+  - [`backend/app/config.py`](file:///d:/SelfProductivityApp/backend/app/config.py)
+  - [`backend/app/main.py`](file:///d:/SelfProductivityApp/backend/app/main.py)
+  - [`backend/app/schemas/__init__.py`](file:///d:/SelfProductivityApp/backend/app/schemas/__init__.py)
+  - [`backend/app/schemas/health.py`](file:///d:/SelfProductivityApp/backend/app/schemas/health.py)
+  - [`backend/app/api/__init__.py`](file:///d:/SelfProductivityApp/backend/app/api/__init__.py)
+  - [`backend/app/api/v1/__init__.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/__init__.py)
+  - [`backend/app/api/v1/health.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/health.py)
+  - [`backend/tests/__init__.py`](file:///d:/SelfProductivityApp/backend/tests/__init__.py)
+  - [`backend/tests/conftest.py`](file:///d:/SelfProductivityApp/backend/tests/conftest.py)
+  - [`backend/tests/test_health.py`](file:///d:/SelfProductivityApp/backend/tests/test_health.py)
+- **Commands & Tests Executed**:
+  1. `git init` -> Exit 0. Initialized empty Git repository in `D:/SelfProductivityApp/.git/`.
+  2. `pnpm create vite frontend --template react-ts` -> Exit 0. Scaffolding complete.
+  3. `pnpm --dir frontend install` -> Exit 0. Installed React 19.3.1, TypeScript 6.0.3, Vite 8.3.4.
+  4. `pnpm --dir frontend add -D tailwindcss @tailwindcss/vite clsx tailwind-merge lucide-react vitest @testing-library/react @testing-library/jest-dom jsdom` -> Exit 0.
+  5. `uv venv backend/.venv --python 3.14` -> Exit 0. Virtual environment created using CPython 3.14.0.
+  6. `uv pip install -e "backend[dev]" --python backend/.venv/Scripts/python.exe` -> Exit 0. Installed 26 packages (fastapi 0.143.3, uvicorn 0.54.0, pydantic 2.14.1, pytest 9.1.1, httpx 0.28.1).
+  7. `backend\.venv\Scripts\python.exe -m pytest backend/tests -v` -> Exit 0. 4 passed in 0.39s (health probe, CORS allowed dev origin, CORS blocked external origin, root endpoint).
+  8. `pnpm --dir frontend exec vitest run` -> Exit 0. 2 passed in 1.44s (renders branding, handles unreachable backend).
+  9. `pnpm --dir frontend build` -> Exit 0. Production build succeeded in 559ms (`dist/index.html`, `dist/assets/index-*.css`, `dist/assets/index-*.js`).
+  10. `pnpm --dir frontend run lint` -> Exit 0. Oxlint finished in 36ms with 0 errors and 0 warnings.
+  11. Live Backend Probe: Started background uvicorn process, issued `Invoke-RestMethod -Uri "http://127.0.0.1:24125/api/v1/health" -Method Get`, stopped process. Returned: `{"status": "healthy", "version": "0.1.0", "database": "connected", "ai_available": true, "active_model": "gemma2:2b"}`.
+  12. Unified Test Suite: `pnpm test` -> Exit 0. All 6 tests passed (4 backend + 2 frontend).
+  13. `git add . ; git commit -m "feat: complete Milestone 1 dual-runtime foundation bootstrap"` -> Exit 0. Root commit `cd5e08c` created.
+- **Errors Encountered & Resolutions**:
+  - *Error*: Initial `vitest` execution with default `forks` pool on Windows timed out waiting for worker.
+    *Resolution*: Configured `pool: 'threads'` in `vite.config.ts`, resolving worker startup and executing in 1.44s.
+  - *Error*: Deprecated `baseUrl` option in `tsconfig.app.json` triggered TS5101 error during `tsc -b`.
+    *Resolution*: Removed `baseUrl` and configured path mapping with `./src/*`.
+  - *Error*: `test` property not recognized on `defineConfig` from `'vite'`.
+    *Resolution*: Switched to `import { defineConfig } from 'vitest/config'`.
+- **Actual Results**:
+  - Both frontend and backend bootstrapped and verified.
+  - Development backend binds strictly to `127.0.0.1:24125`.
+  - CORS strictly allows `http://localhost:5173`, `http://127.0.0.1:5173`, and `tauri://localhost`.
+  - Zero persistent browser storage used for session state.
+- **Milestone 1 Gate Status**: Acceptance criteria verified. Transitioning Milestone 1 to **`IN_REVIEW`**. Awaiting user approval to unlock Milestone 2.
+
 

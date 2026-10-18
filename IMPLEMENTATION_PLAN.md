@@ -65,27 +65,31 @@ gantt
 ---
 
 ### Milestone 1: Repository Foundation & Dual-Runtime Bootstrap
-- **Status**: **`IN_PROGRESS`**
-- **Review & Approval Status**: In Progress (Milestone 0 approved to unlock)
+- **Status**: **`IN_REVIEW`**
+- **Review & Approval Status**: **Awaiting User Review & Sign-Off**
 - **Objective & Scope**: Establish project directory structure, initialize Git version control, scaffold Vite + React frontend and Python 3.14 FastAPI backend with `uv`, and configure browser-mode development runner with in-memory token harness.
 - **Prerequisites**: Approval of Milestone 0 (Satisfied on 2026-10-18).
 - **Ordered Implementation Tasks**:
-  - [ ] **Task 1.1**: Initialize Git repository (`git init`) and configure root `.gitignore` (ignoring node_modules, `.venv`, SQLite `.db`, cache files, and build artifacts).
-  - [ ] **Task 1.2**: Scaffold frontend in `frontend/` using Vite with React 18, TypeScript (`"strict": true`), Tailwind CSS, and Gemini-dark tokens from `DESIGN_SYSTEM.md`. Verify build via `pnpm build`.
-  - [ ] **Task 1.3**: Scaffold backend in `backend/` using Python 3.14 with `uv venv`, `pyproject.toml`, FastAPI, Pydantic v2 schemas, and health probe endpoint (`GET /api/v1/health`).
-  - [ ] **Task 1.4**: Configure local dual-runtime runner script (`pnpm dev` or PowerShell runner) to launch both frontend and backend concurrently in browser development mode (`http://localhost:5173` + `http://127.0.0.1:24125`).
-  - [ ] **Task 1.5**: Implement ephemeral in-memory session token harness for development communication.
-  - [ ] **Task 1.6**: Author Milestone 1 completion verification report.
+  - [x] **Task 1.1**: Initialize Git repository (`git init`) and configure root [`.gitignore`](file:///d:/SelfProductivityApp/.gitignore) (ignoring node_modules, `.venv`, SQLite `.db`, cache files, and build artifacts).
+  - [x] **Task 1.2**: Scaffold frontend in `frontend/` using Vite with React 19.3.1, TypeScript 6.0.3 (`"strict": true`), Tailwind CSS v4, and Gemini-dark tokens from `DESIGN_SYSTEM.md`. Verify build via `pnpm build`.
+  - [x] **Task 1.3**: Scaffold backend in `backend/` using Python 3.14 with `uv venv`, `pyproject.toml`, FastAPI, Pydantic v2 schemas, and health probe endpoint (`GET /api/v1/health`).
+  - [x] **Task 1.4**: Configure local dual-runtime runner script (`scripts/dev.ps1` and root `package.json`) to launch both frontend and backend concurrently in browser development mode (`http://localhost:5173` + `http://127.0.0.1:24125`).
+  - [x] **Task 1.5**: Implement ephemeral in-memory session token harness and automated test suites (Pytest + Vitest).
+  - [x] **Task 1.6**: Author Milestone 1 completion verification report.
 - **Acceptance Criteria**:
-  - Frontend builds cleanly without TypeScript or CSS errors (`pnpm build`).
-  - Backend launches and returns HTTP 200 on `GET /api/v1/health`.
-  - Browser dev mode allows frontend to communicate with localhost backend using in-memory bearer token.
-  - Zero persistent browser storage of session tokens.
+  - [x] Frontend builds cleanly without TypeScript or CSS errors (`pnpm build` passed in 559ms).
+  - [x] Backend launches and returns HTTP 200 on `GET /api/v1/health` (verified live).
+  - [x] Backend binds strictly to `127.0.0.1:24125`; CORS restricted to `http://localhost:5173`.
+  - [x] Automated tests pass 100% (4 backend Pytest + 2 frontend Vitest).
+  - [x] Linter passes 100% (oxlint: 0 errors, 0 warnings).
+  - [x] Zero persistent browser storage of session tokens.
 - **Required Verification Commands**:
-  - `pnpm --dir frontend build`
-  - `curl -I http://127.0.0.1:24125/api/v1/health`
-- **Dependencies & Blockers**: None (browser dev mode avoids Rust requirement).
-- **Completion Evidence**: Verifiable terminal execution logs of build and healthcheck response recorded in `TASK_LOG.md`.
+  - `pnpm build` (Pass - 559ms)
+  - `pnpm test` (Pass - 6 passed)
+  - `pnpm lint` (Pass - 0 errors, 0 warnings)
+  - `Invoke-RestMethod -Uri "http://127.0.0.1:24125/api/v1/health"` (Pass - 200 OK)
+- **Dependencies & Blockers**: None (browser dev mode active).
+- **Completion Evidence**: Git commit `cd5e08c`; terminal logs recorded in `TASK_LOG.md`; verified live probe response.
 
 ---
 

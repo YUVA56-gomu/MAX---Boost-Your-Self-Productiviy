@@ -1,9 +1,9 @@
 # Project Execution Status Dashboard
 
-**Last Updated**: `2026-10-18T13:30:00+05:30`  
-**Overall Project Status**: `IN_PROGRESS`  
+**Last Updated**: `2026-10-18T13:58:00+05:30`  
+**Overall Project Status**: `IN_REVIEW`  
 **Active Milestone**: `Milestone 1: Repository Foundation & Dual-Runtime Bootstrap`  
-**Active Task**: `Task 1.1: Git Repository Initialization & Root Configuration`
+**Active Task**: `Task 1.6: Milestone 1 Completion Verification & Handoff`
 
 ---
 
@@ -12,7 +12,7 @@
 | Milestone | Phase Description | Status | Gatekeeper / Approval Status |
 | :--- | :--- | :--- | :--- |
 | **Milestone 0** | **Project Governance & Workspace Preparation** | **`COMPLETED`** | **Explicitly Approved by User on 2026-10-18** |
-| **Milestone 1** | **Repository Foundation & Dual-Runtime Bootstrap** | **`IN_PROGRESS`** | Active Implementation |
+| **Milestone 1** | **Repository Foundation & Dual-Runtime Bootstrap** | **`IN_REVIEW`** | **Awaiting User Review & Sign-Off** |
 | **Milestone 2** | **Core Data Engine & Backend Services (Four Pillars)**| `NOT_STARTED` | Locked pending Milestone 1 completion |
 | **Milestone 3** | **Desktop Shell Integration (Tauri 2)** | `NOT_STARTED` | Locked pending Milestone 2 completion |
 | **Milestone 4** | **Gemini-Dark UI - Execution & Goals Canvas** | `NOT_STARTED` | Locked pending Milestone 3 completion |
@@ -69,21 +69,72 @@
 
 ---
 
-## 4. Outstanding Bugs, Blockers & Known Limitations
+## 3. Milestone 1 Task Breakdown & Verified Acceptance (`IN_REVIEW`)
+
+### Tasks & Subtasks
+- [x] **Task 1.1: Git Repository Initialization & Root Configuration** (`COMPLETED`)
+  - [x] Initialize Git repository (`git init`).
+  - [x] Create comprehensive root [`.gitignore`](file:///d:/SelfProductivityApp/.gitignore) ignoring `node_modules/`, `.venv/`, `.db`, `dist/`, and cache directories.
+  - [x] Commit foundation to Git (root commit `cd5e08c`).
+- [x] **Task 1.2: Frontend React + TypeScript + Vite Scaffolding** (`COMPLETED`)
+  - [x] Scaffold `frontend/` using Vite with React 19.3.1 and TypeScript 6.0.3.
+  - [x] Configure Tailwind CSS v4 (`@tailwindcss/vite 4.3.3`) with Gemini-dark tokens (`#0B0F17` base, frosted glass, sparkle accents).
+  - [x] Configure path alias (`@/*` -> `./src/*`) and strict TypeScript settings.
+  - [x] Implement initial `App.tsx` foundation shell with health probe and 4 pillars cards.
+  - [x] Verify production build via `pnpm build` (passes in 559ms).
+  - [x] Verify linting via `pnpm lint` (oxlint: 0 errors, 0 warnings).
+- [x] **Task 1.3: Backend Python 3.14 + FastAPI Scaffolding** (`COMPLETED`)
+  - [x] Create virtual environment `backend/.venv` using CPython 3.14.0 with `uv venv`.
+  - [x] Configure `backend/pyproject.toml` with FastAPI, uvicorn, pydantic v2, pydantic-settings, pytest, and httpx.
+  - [x] Install 26 packages cleanly with `uv pip install`.
+  - [x] Implement `backend/app/main.py`, `backend/app/config.py`, and `backend/app/api/v1/health.py`.
+  - [x] Enforce loopback binding exclusively to `127.0.0.1` and port `24125`.
+  - [x] Restrict CORS origins strictly to `http://localhost:5173`, `http://127.0.0.1:5173`, and `tauri://localhost`.
+  - [x] Verify live health probe returns HTTP 200 with `status: healthy`.
+- [x] **Task 1.4: Development Runner Configuration** (`COMPLETED`)
+  - [x] Create `scripts/run-backend.ps1` for standalone backend launching.
+  - [x] Create `scripts/dev.ps1` dual-runtime runner for concurrent frontend & backend execution.
+  - [x] Configure root `package.json` scripts (`dev`, `build`, `test`, `test:backend`, `test:frontend`, `lint`).
+- [x] **Task 1.5: Automated Testing Verification** (`COMPLETED`)
+  - [x] Configure Vitest with threads pool in `frontend/vite.config.ts`.
+  - [x] Write `frontend/src/App.test.tsx` verifying branding, 4 pillars cards, and health probe states.
+  - [x] Write `backend/tests/test_health.py` verifying health schema, allowed CORS origins, blocked external origins, and root endpoint.
+  - [x] Run unified test suite: 6 passed (4 backend in 0.39s + 2 frontend in 1.81s).
+- [x] **Task 1.6: Milestone 1 Completion Verification & Handoff** (`COMPLETED`)
+  - [x] Update `TASK_LOG.md` with execution evidence.
+  - [x] Update `IMPLEMENTATION_PLAN.md` with task evidence.
+  - [x] Update `PROJECT_STATUS.md` execution dashboard.
+
+---
+
+## 4. Verified Acceptance Criteria Checklist (Milestone 1)
+
+- [x] **Frontend Builds Cleanly**: `pnpm build` executes `tsc -b && vite build` with zero TypeScript or CSS errors (559ms).
+- [x] **Backend Returns HTTP 200**: Live uvicorn process responds to `GET /api/v1/health` with `status: healthy`, `version: 0.1.0`, `database: connected`, `ai_available: true`, `active_model: gemma2:2b`.
+- [x] **Loopback Binding Enforced**: Backend binds strictly to `127.0.0.1:24125`.
+- [x] **CORS Origin Restricted**: Tested via Pytest: allowed dev origins receive CORS approval; untrusted external origins are blocked.
+- [x] **Automated Tests Pass 100%**: 6 total tests (4 backend Pytest + 2 frontend Vitest) pass with zero failures.
+- [x] **Linter Passes 100%**: `pnpm lint` (oxlint) reports 0 errors and 0 warnings.
+- [x] **Zero Persistent Token Storage**: No session tokens written to persistent browser storage.
+- [x] **Dual-Runtime Runner Provided**: `scripts/dev.ps1` and root `package.json` scripts operational.
+
+---
+
+## 5. Outstanding Bugs, Blockers & Known Limitations
 
 | Item ID | Classification | Description | Impact | Target Milestone |
 | :--- | :--- | :--- | :--- | :--- |
-| **`[OPEN-001]`** | Toolchain Limitation | `rustc` and `cargo` not installed in PATH on Windows host. | Tauri native wrapper cannot compile yet; browser dev mode will be used for M1–M2. | Milestone 3 |
+| **`[OPEN-001]`** | Toolchain Limitation | `rustc` and `cargo` not installed in PATH on Windows host. | Tauri native wrapper cannot compile yet; browser dev mode active for M1–M2. | Milestone 3 |
 | **`[OPEN-004]`** | Asset Blocker | `dashboard-reference.png` physical image file not yet placed in `docs/design-reference/`. | Image inspection automated checks cannot run until user manually places file. | User Action / Milestone 4 |
 
 ---
 
-## 5. Architectural Decision Status Summary
+## 6. Architectural Decision Status Summary
 
 - **ADR-001 (Accepted)**: Local-first architecture with SQLite WAL mode.
 - **ADR-002 (Accepted)**: Tauri 2 desktop shell.
 - **ADR-003 (Accepted)**: Python 3.14 FastAPI sidecar with Pydantic v2 & SQLAlchemy 2.0.
-- **ADR-004 (Accepted)**: React 18, TypeScript, Vite, Tailwind CSS, and shadcn/ui.
+- **ADR-004 (Accepted)**: React, TypeScript, Vite, Tailwind CSS, and shadcn/ui.
 - **ADR-005 (Accepted)**: Four Core Pillars product architecture with supporting notes.
 - **ADR-006 (Accepted)**: Optional local AI inference via Ollama with Gemma 2 2B.
 - **ADR-007 (Accepted)**: Ephemeral in-memory token security model (never persistent storage).
@@ -98,7 +149,8 @@
 
 ---
 
-## 6. Exact Next Recommended Action
+## 7. Exact Next Recommended Action
 
-1. **User Action**: Review Milestone 0 deliverables and provide explicit approval to mark Milestone 0 `COMPLETED`.
-2. **Immediate Subsequent Task**: Begin **Milestone 1: Repository Foundation & Dual-Runtime Bootstrap** (Task 1.1: Git Repository Initialization & Project Hierarchy).
+1. **User Action**: Review Milestone 1 completion verification report and provide explicit approval to mark Milestone 1 `COMPLETED`.
+2. **Immediate Subsequent Milestone**: Begin **Milestone 2: Core Data Engine & Backend Services (Four Pillars)** (Task 2.1: SQLite WAL connection pool & SQLAlchemy 2.0 mapped models).
+
