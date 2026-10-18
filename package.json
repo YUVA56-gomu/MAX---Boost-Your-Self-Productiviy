@@ -1,0 +1,16 @@
+{
+  "name": "adaptive-productivity-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-First Adaptive Productivity Desktop Application",
+  "scripts": {
+    "dev": "powershell -ExecutionPolicy Bypass -File ./scripts/dev.ps1",
+    "dev:backend": "powershell -ExecutionPolicy Bypass -File ./scripts/run-backend.ps1",
+    "dev:frontend": "pnpm --dir frontend dev",
+    "build": "pnpm --dir frontend build",
+    "test:frontend": "pnpm --dir frontend exec vitest run",
+    "test:backend": "backend\\.venv\\Scripts\\python.exe -m pytest backend/tests -v",
+    "test": "pnpm test:backend && pnpm test:frontend",
+    "lint": "pnpm --dir frontend run lint"
+  }
+}
