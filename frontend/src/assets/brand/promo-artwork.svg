@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none">
+  <defs>
+    <linearGradient id="promoMagenta" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FB7185" stop-opacity="0.95" />
+      <stop offset="60%" stop-color="#EC4899" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0.6" />
+    </linearGradient>
+
+    <linearGradient id="promoOrange" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F97316" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0.7" />
+    </linearGradient>
+
+    <radialGradient id="promoGlow" cx="60%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#BE185D" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#BE185D" stop-opacity="0" />
+    </radialGradient>
+
+    <linearGradient id="promoEdge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.05" />
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="160" height="120" fill="url(#promoGlow)" />
+
+  <g transform="translate(60, -10) rotate(-18)">
+    <rect
+      x="0"
+      y="0"
+      width="70"
+      height="100"
+      rx="18"
+      fill="url(#promoMagenta)"
+      stroke="url(#promoEdge)"
+      stroke-width="1"
+    />
+  </g>
+
+  <g transform="translate(35, 20) rotate(10)">
+    <rect
+      x="0"
+      y="0"
+      width="65"
+      height="90"
+      rx="18"
+      fill="url(#promoOrange)"
+      stroke="url(#promoEdge)"
+      stroke-width="1"
+    />
+  </g>
+</svg>

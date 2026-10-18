@@ -20,13 +20,13 @@ gantt
     axisFormat  M%s
     
     section Foundation & Engine
-    M0: Governance, 4 Pillars & Tracking (IN_REVIEW) :active, m0, 0, 1
-    M1: Repository Foundation & Dual Bootstrap       :m1, after m0, 1
-    M2: Core Data Engine & 4 Pillars Backend         :m2, after m1, 2
+    M0: Governance, 4 Pillars & Tracking (COMPLETED) :done, m0, 0, 1
+    M1: Dual-Runtime Bootstrap (COMPLETED)           :done, m1, after m0, 1
+    M2: Core Data Engine Backend (COMPLETED)         :done, m2, after m1, 2
     
     section Shell & Canvas
-    M3: Tauri 2 Desktop Shell Integration           :m3, after m2, 3
-    M4: Gemini-Dark UI: Tasks & Goals Canvas         :m4, after m3, 4
+    M3: Tauri 2 Desktop Shell (COMPLETED)            :done, m3, after m2, 3
+    M4: Gemini-Dark UI Canvas (IN_PROGRESS)          :active, m4, after m3, 4
     
     section Behavioral & Intelligence
     M5: Habits, Focus & Insights Dashboard           :m5, after m4, 5
@@ -130,9 +130,9 @@ gantt
 ---
 
 ### Milestone 3: Desktop Shell Integration (Tauri 2)
-- **Status**: **`IN_REVIEW`**
-- **Review & Approval Status**: Completed & Awaiting User Approval (Implemented on 2026-10-18)
-- **Objective & Scope**: Integrate native desktop shell via Tauri 2, configure Rust toolchain on workstation, implement automated sidecar supervisor lifecycle, and manage in-memory token delivery without persistent storage.
+- **Status**: **`COMPLETED`**
+- **Review & Approval Status**: Explicitly Approved by User on 2026-10-18
+- **Objective & Scope**: Integrate native desktop shell via Tauri 2, configure Rust toolchain on workstation, implement automated sidecar supervisor lifecycle, and manage in-memory token delivery without persistent storage. Production installer and sidecar distribution packaging explicitly deferred to Milestone 7.
 - **Prerequisites**: Milestone 2 approved (Satisfied on 2026-10-18).
 - **Ordered Implementation Tasks**:
   - [x] **Task 3.1**: Verify/install Rust toolchain (`rustup 1.29.1`, `rustc 1.99.1`, `cargo 1.99.1`) and 64-bit MinGW-w64 toolchain via WinLibs (POSIX UCRT GCC 16.2.0, Binutils 2.47 x86_64), resolving `[OPEN-001]`.
@@ -141,7 +141,7 @@ gantt
   - [x] **Task 3.4**: Inject session token into webview memory via secure Tauri IPC command `get_session_token` in `src-tauri/src/lib.rs`, consumed by `frontend/src/lib/auth.ts` (strictly zero persistent storage in localStorage, sessionStorage, cookies, or IndexedDB; seamless browser dev fallback).
   - [x] **Task 3.5**: Handle window close and application exit events (`WindowEvent::Destroyed`, `RunEvent::Exit`) with graceful sidecar process termination (`child.kill()`, `child.wait()`), leaving zero orphan processes.
   - [x] **Task 3.6**: Configure Tauri window geometry, dark theme, and capabilities in `src-tauri/capabilities/default.json`.
-  - [x] **Task 3.7**: Author Milestone 3 completion report, verify dual-runtime test suite (`pnpm test` executes 43 backend tests, 7 frontend tests, and desktop lifecycle verification script with 100% pass rate), and investigate packaging options (`[OPEN-002]`).
+  - [x] **Task 3.7**: Author Milestone 3 completion report, verify dual-runtime test suite (`pnpm test` executes 43 backend tests, 7 frontend tests, and desktop lifecycle verification script with 100% pass rate), and investigate packaging options (`[OPEN-002]` deferred to Milestone 7).
 - **Acceptance Criteria**:
   - [x] Native Tauri window compiles and links native binary (`src-tauri/target/debug/app.exe`, 222MB debug build).
   - [x] Python sidecar process cleanly launches with Tauri and shuts down when window is closed (verified zero orphan processes via `scripts/test-desktop-lifecycle.ps1`).
@@ -159,14 +159,14 @@ gantt
 
 ---
 
-### Milestone 4: Gemini-Dark UI - Execution & Goals Canvas
-- **Status**: **`NOT_STARTED`**
-- **Review & Approval Status**: Pending
-- **Objective & Scope**: Build the user interface for Dashboard/Home, Tasks & Subtasks, Task Details modal, Goals & Milestones, Projects, Workspaces, and supporting Notes following `UI.md` and `DESIGN_SYSTEM.md`.
-- **Prerequisites**: Milestone 3 approved; `dashboard-reference.png` placed in `docs/design-reference/`.
+### Milestone 4: Product UI Implementation (Gemini-Dark Canvas)
+- **Status**: **`IN_PROGRESS`**
+- **Review & Approval Status**: Active Implementation (Started on 2026-10-18)
+- **Objective & Scope**: Build the user interface for Dashboard/Home, Tasks & Subtasks, Task Details modal, Goals & Milestones, Projects, Workspaces, and supporting Notes following `UI.md` and `DESIGN_SYSTEM.md`. Priority: Dashboard vertical slice and live backend workflows.
+- **Prerequisites**: Milestone 3 approved (Satisfied on 2026-10-18).
 - **Ordered Implementation Tasks**:
-  - [ ] **Task 4.1**: Build app shell layout: 240px collapsible left sidebar, top header bar with search input (`Ctrl+K`), and 340px right contextual drawer.
-  - [ ] **Task 4.2**: Implement Dashboard/Home (Screen 1): greeting hero banner, 4 quick stat cards, Today's Tasks widget, Focus Timer widget, and weekly activity bar chart.
+  - [x] **Task 4.1**: Build app shell layout: 240px collapsible left sidebar, top header bar with search input (`Ctrl+K`), 340px right contextual drawer, and distinctive MAX geometric brand mark (`MaxLogo.tsx`).
+  - [x] **Task 4.2**: Implement Dashboard/Home (Screen 1): greeting hero banner with abstract geometric glass artwork (`HeroArtwork.tsx`), 4 quick stat cards with refined gradient progress bars and mini-histogram, Today's Tasks widget, Focus Timer widget with neon gradient ring, weekly activity bar chart, and coordinated sidebar AI promo card (`PromoArtwork.tsx`).
   - [ ] **Task 4.3**: Implement Tasks & Subtasks Canvas (Screen 2): Kanban board with drag-and-drop, list view, subtask trees, priority pills, and cognitive energy badges.
   - [ ] **Task 4.4**: Implement Task Details & Creation Modal (Screen 3): markdown editor, metadata selectors, recurrence configuration, and `task_history` audit drawer.
   - [ ] **Task 4.5**: Implement Goals Canvas (Screen 4 & 5): Long-Term/Short-Term horizon cards, milestone timeline, linked tasks table, and automated progress roll-up.

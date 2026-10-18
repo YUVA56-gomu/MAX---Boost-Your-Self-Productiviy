@@ -351,6 +351,100 @@ All engineering activities, terminal executions, file modifications, and test ve
   - 100% test pass rate across backend, frontend, and desktop lifecycle verification.
 - **Milestone 3 Gate Status**: All acceptance criteria verified. Transitioning Milestone 3 to **`IN_REVIEW`**. Awaiting human gatekeeper approval before beginning Milestone 4.
 
+---
+
+### Session 10: Milestone 4 Dashboard Vertical Slice Implementation
+- **Date & Time**: `2026-10-18T22:15:00+05:30`
+- **Milestone & Task**: `Milestone 4: Task 4.1 & Task 4.2 (Dashboard Vertical Slice & Real Workflows)`
+- **User Action**: Explicitly approved Milestone 3: Desktop Shell Integration (Tauri 2). Milestone 3 transitioned to **`COMPLETED`**. Milestone 4 transitioned to **`IN_PROGRESS`** with priority directive: build and validate the dashboard vertical slice first, connected to real persisted backend data.
+- **Files Created**:
+  - [`frontend/src/components/dashboard/Sidebar.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/Sidebar.tsx): 240px collapsible sidebar with workspaces and navigation.
+  - [`frontend/src/components/dashboard/Header.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/Header.tsx): Search input, active workspace indicator, quick add button, notifications.
+  - [`frontend/src/components/dashboard/HeroBanner.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/HeroBanner.tsx): Time-aware greeting and date badge.
+  - [`frontend/src/components/dashboard/StatStrip.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/StatStrip.tsx): 4 summary metric cards connected to live SQLite state.
+  - [`frontend/src/components/dashboard/TodayTasks.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/TodayTasks.tsx): Interactive task list with filters, inline completion, priority badges.
+  - [`frontend/src/components/dashboard/FocusTimer.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/FocusTimer.tsx): Pomodoro/short/long break timer HUD with live session persistence.
+  - [`frontend/src/components/dashboard/WeeklyActivity.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/WeeklyActivity.tsx): Weekly velocity, workload accuracy, and 7-day bar chart.
+  - [`frontend/src/components/dashboard/TaskDrawer.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/TaskDrawer.tsx): Right contextual creation and editing drawer.
+  - [`frontend/src/components/dashboard/Dashboard.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/Dashboard.test.tsx): 8 unit tests for dashboard interactions.
+  - [`scripts/test-dashboard-workflows.ps1`](file:///d:/SelfProductivityApp/scripts/test-dashboard-workflows.ps1): Automated end-to-end verification of real dashboard workflows and SQLite persistence.
+- **Commands & Tests Executed**:
+  1. `pnpm -C frontend test` -> Exit 0. 15 tests passed across 3 test files.
+  2. `pnpm -C frontend lint` -> Exit 0. 0 warnings, 0 errors.
+  3. `pnpm -C frontend build` -> Exit 0. Compiled production bundle in 542ms.
+  4. `backend\.venv\Scripts\python.exe -m pytest backend/tests` -> Exit 0. 43 passed.
+  5. `powershell -ExecutionPolicy Bypass -File scripts/test-dashboard-workflows.ps1` -> Exit 0. Verified all 12 live API workflow steps.
+
+---
+
+### Session 11: Milestone 4 Visual Branding Pass (Gemini-Dark Reference Alignment)
+- **Date & Time**: `2026-10-18T23:10:00+05:30`
+- **Milestone & Task**: `Milestone 4: Visual Branding Pass (Brand Mark, Hero Artwork & Styling Refinement)`
+- **User Action**: Provided approved physical visual reference images (`dashboard-reference.png` and `geometric-artwork-reference.png`) and directed focused visual-branding pass without altering backend contracts or breaking existing integrations.
+- **Physical Reference Audit**:
+  - [`docs/design-reference/dashboard-reference.png`](file:///d:/SelfProductivityApp/docs/design-reference/dashboard-reference.png) (1,020,340 bytes) verified on disk.
+  - [`docs/design-reference/geometric-artwork-reference.png`](file:///d:/SelfProductivityApp/docs/design-reference/geometric-artwork-reference.png) (131,379 bytes) verified on disk.
+  - **`[OPEN-004]`** transitioned from `UNRESOLVED` to **`RESOLVED (ACCEPTED)`**.
+- **Files Created**:
+  - [`frontend/src/components/brand/MaxLogo.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/brand/MaxLogo.tsx): 4-petal geometric clover logo with SVG mask for transparent center aperture and calibrated gradient stops (cyan, royal blue, amber/emerald, coral red/orange).
+  - [`frontend/src/assets/brand/max-logo.svg`](file:///d:/SelfProductivityApp/frontend/src/assets/brand/max-logo.svg): Standalone SVG vector asset.
+  - [`frontend/src/components/brand/HeroArtwork.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/brand/HeroArtwork.tsx): Translucent, overlapping geometric glass sheets with specular highlight rims and deep ambient radial glows.
+  - [`frontend/src/assets/brand/hero-artwork.svg`](file:///d:/SelfProductivityApp/frontend/src/assets/brand/hero-artwork.svg): Standalone vector hero asset.
+  - [`frontend/src/components/brand/PromoArtwork.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/brand/PromoArtwork.tsx): Coordinated glass corner artwork for the sidebar promotional card.
+  - [`frontend/src/assets/brand/promo-artwork.svg`](file:///d:/SelfProductivityApp/frontend/src/assets/brand/promo-artwork.svg): Standalone vector promo asset.
+  - [`frontend/src/components/brand/Brand.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/brand/Brand.test.tsx): Unit tests verifying MaxLogo, HeroArtwork, and PromoArtwork SVG geometry, roles, and gradients (3 tests passing).
+- **Files Modified**:
+  - [`frontend/src/components/dashboard/Sidebar.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/Sidebar.tsx): Replaced generic square with `<MaxLogo size={32} />`, added tracked "MAX" wordmark typography, integrated `<PromoArtwork />` and rounded arrow button into "Want to level up?" AI card.
+  - [`frontend/src/components/dashboard/HeroBanner.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/HeroBanner.tsx): Aligned layout to reference canvas, integrated `<HeroArtwork />`, formatted greeting with cyan-via-indigo-to-pink gradient for "Yuvaraj", and added motivational quote card ("Discipline today builds the freedom tomorrow.").
+  - [`frontend/src/components/dashboard/StatStrip.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/StatStrip.tsx): Updated stat cards to match reference icons, purple-to-pink progress bar for Tasks, mini vertical histogram bars for Focus Time, teal-to-emerald bar for Goals, and amber-to-orange bar for Habits.
+  - [`frontend/src/components/dashboard/FocusTimer.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/FocusTimer.tsx): Refined circular progress ring with neon cyan-to-magenta gradient stroke, play/pause circular button, stop button, and mode tab selectors.
+  - [`frontend/src/components/dashboard/Header.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/Header.tsx): Search input placeholder updated to "Search tasks, goals, or anything..." with Ctrl K badge and ChevronDown on user profile.
+  - [`frontend/src/App.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/App.test.tsx): Added brand mark and quote assertions, updated multi-occurrence queries.
+  - [`scripts/test-dashboard-workflows.ps1`](file:///d:/SelfProductivityApp/scripts/test-dashboard-workflows.ps1): Fixed PID cleanup to handle multiple socket connections safely.
+  - [`scripts/start-dev.ps1`](file:///d:/SelfProductivityApp/scripts/start-dev.ps1): Fixed PID cleanup for non-system processes.
+  - [`DECISIONS.md`](file:///d:/SelfProductivityApp/DECISIONS.md): Added ADR-011 (Local Vector Branding Architecture) and resolved `[OPEN-004]`.
+  - [`PROJECT_STATUS.md`](file:///d:/SelfProductivityApp/PROJECT_STATUS.md): Updated active task and blocker status.
+  - [`IMPLEMENTATION_PLAN.md`](file:///d:/SelfProductivityApp/IMPLEMENTATION_PLAN.md): Marked Tasks 4.1 and 4.2 completed.
+- **Commands & Tests Executed**:
+  1. `pnpm -C frontend test` -> Exit 0. All 18 tests passed across 4 test files (`src/lib/auth.test.ts` 5/5, `src/components/brand/Brand.test.tsx` 3/3, `src/components/dashboard/Dashboard.test.tsx` 8/8, `src/App.test.tsx` 2/2) in 2.26s.
+  2. `pnpm -C frontend lint` -> Exit 0. 0 warnings, 0 errors across 26 files in 77ms.
+  3. `pnpm -C frontend build` -> Exit 0. `tsc -b && vite build` built production bundle in 874ms (`dist/index.html`, `dist/assets/index-CuJ1DrSU.css`, `dist/assets/index-CXsp7fuk.js`).
+  4. `backend\.venv\Scripts\python.exe -m pytest backend/tests` -> Exit 0. 43 passed in 4.47s.
+  5. `powershell -ExecutionPolicy Bypass -File scripts/test-dashboard-workflows.ps1` -> Exit 0. All 12/12 live API workflow and persistence steps succeeded.
+  6. `powershell -ExecutionPolicy Bypass -File scripts/start-dev.ps1` -> Exit 0 (Daemon). Backend and frontend running on `127.0.0.1:24125` and `http://localhost:5173`.
+- **Actual Results**:
+  - Distinctive multicolor geometric MAX clover brand mark live in sidebar and application shell.
+  - Abstract geometric translucent glass artwork live in greeting section.
+  - Coordinated AI promotion card artwork live in sidebar.
+  - Restrained gradients, card borders, and dark design tokens aligned strictly with `dashboard-reference.png`.
+  - Zero broken functionality: all task CRUD, focus timer logging, and workload analytics intact.
+  - 100% test pass rate across frontend and backend suites.
+
+---
+
+### Session 12: Primary Hero Artwork Asset Integration (`hero-artwork.png`)
+- **Date & Time**: `2026-10-18T23:25:00+05:30`
+- **Milestone & Task**: `Milestone 4: Primary Hero Artwork Asset Integration & Sidebar Promo Crop`
+- **User Action**: Directed usage of supplied `frontend/src/assets/brand/hero-artwork.png` (1,473,009 bytes) as the primary Home dashboard hero artwork, replacing the simple floating-rectangle vector composition while preserving the MAX logo, responsive right-side positioning, and subtle dark background gradient fade.
+- **Files Modified**:
+  - [`frontend/src/components/brand/HeroArtwork.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/brand/HeroArtwork.tsx): Integrated `hero-artwork.png` with `object-cover object-right`, `eager` loading, and dark edge gradient fades (`from-[#0B0F17] via-[#0B0F17]/40 to-transparent`).
+  - [`frontend/src/components/brand/PromoArtwork.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/brand/PromoArtwork.tsx): Reused a cropped section of `hero-artwork.png` via CSS scale/transform offsets (`w-[260%] h-[260%] -translate-x-[46%] -translate-y-[10%]`), providing visual harmony without duplicate image assets.
+  - [`frontend/src/components/dashboard/HeroBanner.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/HeroBanner.tsx): Positioned decorative `HeroArtwork` container responsively on the right side (`sm:w-4/5 md:w-3/4 lg:w-2/3`), preserving full legibility of greeting, subtitle, and quote card.
+  - [`frontend/src/components/brand/Brand.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/brand/Brand.test.tsx): Updated unit tests to verify `hero-artwork.png` integration, presentation roles, and image loading attributes.
+  - [`TASK_LOG.md`](file:///d:/SelfProductivityApp/TASK_LOG.md): Recorded Session 12 implementation.
+- **Commands & Tests Executed**:
+  1. `pnpm -C frontend test` -> Exit 0. All 18 tests passed across 4 test files (`src/lib/auth.test.ts` 5/5, `src/components/brand/Brand.test.tsx` 3/3, `src/components/dashboard/Dashboard.test.tsx` 8/8, `src/App.test.tsx` 2/2) in 4.29s.
+  2. `pnpm -C frontend lint` -> Exit 0. `oxlint`: 0 warnings, 0 errors across 26 files in 90ms.
+  3. `pnpm -C frontend build` -> Exit 0. `tsc -b && vite build` compiled production bundle in 801ms (`dist/assets/hero-artwork-CQcVMDCb.png` 1,473 kB, `dist/assets/index-DsFTFOtc.css` 53.72 kB, `dist/assets/index-EFLrkCG7.js` 316.47 kB).
+  4. `backend\.venv\Scripts\python.exe -m pytest backend/tests` -> Exit 0. All 43 passed in 3.82s.
+- **Actual Results**:
+  - `hero-artwork.png` integrated cleanly into `HeroBanner.tsx` with non-interactive decorative presentation.
+  - Subtle dark gradient overlay smoothly blends the image into the obsidian background, maintaining crisp contrast for "Good morning, Yuvaraj" and the date.
+  - Sidebar "Want to level up?" promotional card reuses the master image with a coordinated glass flare crop.
+  - 100% test pass rate preserved across all suites.
+
+
+
 
 
 

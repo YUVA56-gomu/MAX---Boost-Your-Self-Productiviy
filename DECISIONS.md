@@ -124,12 +124,23 @@ Per project governance, every decision is explicit. **Any unresolved or intentio
 
 ---
 
+### ADR-011: Local Vector Branding & Geometric Glass Artwork Architecture
+- **Status**: **ACCEPTED (2026-10-18)**
+- **Context**: The desktop application requires a distinctive, premium brand mark and ambient artwork matching the approved Gemini-dark visual reference (`dashboard-reference.png`). Remote assets, random emoji, and bulky base64 data URIs are strictly prohibited.
+- **Decision**: Implement the visual branding using lightweight, local SVG vector assets and reusable React components:
+  1. `MaxLogo` (`frontend/src/components/brand/MaxLogo.tsx` & `frontend/src/assets/brand/max-logo.svg`): 4-petal geometric clover with a transparent central aperture mask and four calibrated gradient lobes (cyan, royal blue, amber/emerald, coral red/orange).
+  2. `HeroArtwork` (`frontend/src/components/brand/HeroArtwork.tsx` & `frontend/src/assets/brand/hero-artwork.svg`): Translucent overlapping glass sheets with specular highlight rims and deep ambient radial glows.
+  3. `PromoArtwork` (`frontend/src/components/brand/PromoArtwork.tsx` & `frontend/src/assets/brand/promo-artwork.svg`): Coordinated corner artwork for the sidebar "Want to level up?" AI promotional card.
+- **Consequences**: Zero network runtime dependencies, 100% offline compliance, crisp resolution-independent rendering at all DPI levels, and sub-millisecond render times.
+
+---
+
 ### [OPEN-004]: Visual Design Reference Asset Placement
-- **Status**: **UNRESOLVED (OPEN)**
-- **Audit Findings**: The workspace was re-inspected; `dashboard-reference.png` was not found.
-- **Action Required**: Please manually place the approved primary reference image into:
-  `d:\SelfProductivityApp\docs\design-reference\dashboard-reference.png`
-  Detailed screen specifications and component inventory are indexed in [`UI.md`](file:///d:/SelfProductivityApp/UI.md).
+- **Status**: **RESOLVED / ACCEPTED (2026-10-18)**
+- **Audit Findings**:
+  - `docs/design-reference/dashboard-reference.png` (1,020,340 bytes) verified present on disk as the primary visual source of truth for dashboard layout, tokens, stat strip, task list, focus timer, and weekly activity.
+  - `docs/design-reference/geometric-artwork-reference.png` (131,379 bytes) verified present on disk as the visual reference for the geometric clover logo, translucent glass ribbons, and isometric blocks.
+- **Decision**: Visual branding pass executed against these verified reference assets. Both files registered in [`docs/design-reference/README.md`](file:///d:/SelfProductivityApp/docs/design-reference/README.md) and [`UI.md`](file:///d:/SelfProductivityApp/UI.md).
 
 ---
 
