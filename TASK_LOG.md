@@ -203,4 +203,98 @@ All engineering activities, terminal executions, file modifications, and test ve
   - Runner process management verified to leave zero orphaned processes.
 - **Milestone 1 Gate Status**: Discrepancies resolved and verified. Milestone 1 remains **`IN_REVIEW`** awaiting user review.
 
+---
+
+### Session 7: Milestone 1 User Approval & Milestone 2 Core Data Engine Implementation
+- **Date & Time**: `2026-10-18T20:01:00+05:30`
+- **Milestone & Task**: `Milestone 2: Tasks 2.1 - 2.7 (Core Data Engine & Backend Services - Four Pillars)`
+- **User Action**: Explicit approval granted for Milestone 1: Repository Foundation & Dual-Runtime Bootstrap. Milestone 1 transitioned to **`COMPLETED`**. Milestone 2 transitioned to **`IN_PROGRESS`**, then completed and transitioned to **`IN_REVIEW`**.
+- **Files Created**:
+  - [`alembic.ini`](file:///d:/SelfProductivityApp/alembic.ini): Root Alembic configuration targeting `backend/alembic`.
+  - [`backend/alembic/env.py`](file:///d:/SelfProductivityApp/backend/alembic/env.py): Configured with `render_as_batch=True` for SQLite and `Base.metadata`.
+  - [`backend/alembic/script.py.mako`](file:///d:/SelfProductivityApp/backend/alembic/script.py.mako): Migration template.
+  - [`backend/alembic/versions/94a63b57f1cd_initial_schema.py`](file:///d:/SelfProductivityApp/backend/alembic/versions/94a63b57f1cd_initial_schema.py): Baseline migration creating all 18 tables.
+  - [`backend/app/db/__init__.py`](file:///d:/SelfProductivityApp/backend/app/db/__init__.py)
+  - [`backend/app/db/base.py`](file:///d:/SelfProductivityApp/backend/app/db/base.py): SQLAlchemy declarative Base class.
+  - [`backend/app/db/session.py`](file:///d:/SelfProductivityApp/backend/app/db/session.py): Engine with WAL mode (`PRAGMA journal_mode=WAL`), `synchronous=NORMAL`, `foreign_keys=ON`, `busy_timeout=5000`, `SessionLocal`, `get_db`, and `ping_db()`.
+  - [`backend/app/db/init_db.py`](file:///d:/SelfProductivityApp/backend/app/db/init_db.py): Database seeder ensuring default workspace (`Personal`, `id="default"`, `slug="personal"`).
+  - [`backend/app/middleware/__init__.py`](file:///d:/SelfProductivityApp/backend/app/middleware/__init__.py)
+  - [`backend/app/middleware/auth.py`](file:///d:/SelfProductivityApp/backend/app/middleware/auth.py): Constant-time bearer token authentication using `secrets.compare_digest`.
+  - [`backend/app/middleware/logging.py`](file:///d:/SelfProductivityApp/backend/app/middleware/logging.py): Sensitive header redaction middleware masking `Authorization`, `Cookie`, and `X-Auth-Token`.
+  - [`backend/app/models/__init__.py`](file:///d:/SelfProductivityApp/backend/app/models/__init__.py): Exposes all 18 mapped models.
+  - [`backend/app/models/workspace.py`](file:///d:/SelfProductivityApp/backend/app/models/workspace.py): `Workspace` model.
+  - [`backend/app/models/task.py`](file:///d:/SelfProductivityApp/backend/app/models/task.py): `Task`, `TaskRecurrenceRule`, `TaskHistory`, `Tag`, `TaskTag` models.
+  - [`backend/app/models/goal.py`](file:///d:/SelfProductivityApp/backend/app/models/goal.py): `Goal`, `GoalMilestone` models.
+  - [`backend/app/models/project.py`](file:///d:/SelfProductivityApp/backend/app/models/project.py): `Project` model.
+  - [`backend/app/models/habit.py`](file:///d:/SelfProductivityApp/backend/app/models/habit.py): `Habit`, `HabitLog` models.
+  - [`backend/app/models/focus.py`](file:///d:/SelfProductivityApp/backend/app/models/focus.py): `FocusSession` model.
+  - [`backend/app/models/reflection.py`](file:///d:/SelfProductivityApp/backend/app/models/reflection.py): `DailyReview`, `Blocker`, `DailyMetrics` models.
+  - [`backend/app/models/note.py`](file:///d:/SelfProductivityApp/backend/app/models/note.py): `Note`, `NoteLink` models.
+  - [`backend/app/models/ai_audit.py`](file:///d:/SelfProductivityApp/backend/app/models/ai_audit.py): `AIAuditLog` model.
+  - [`backend/app/schemas/workspace.py`](file:///d:/SelfProductivityApp/backend/app/schemas/workspace.py): Pydantic v2 schemas for workspaces.
+  - [`backend/app/schemas/task.py`](file:///d:/SelfProductivityApp/backend/app/schemas/task.py): Pydantic v2 schemas for tasks, subtasks, recurrence, history.
+  - [`backend/app/schemas/goal.py`](file:///d:/SelfProductivityApp/backend/app/schemas/goal.py): Pydantic v2 schemas for goals and milestones.
+  - [`backend/app/schemas/project.py`](file:///d:/SelfProductivityApp/backend/app/schemas/project.py): Pydantic v2 schemas for projects.
+  - [`backend/app/schemas/habit.py`](file:///d:/SelfProductivityApp/backend/app/schemas/habit.py): Pydantic v2 schemas for habits and habit checkins.
+  - [`backend/app/schemas/focus.py`](file:///d:/SelfProductivityApp/backend/app/schemas/focus.py): Pydantic v2 schemas for focus sessions.
+  - [`backend/app/schemas/reflection.py`](file:///d:/SelfProductivityApp/backend/app/schemas/reflection.py): Pydantic v2 schemas for daily reviews, blockers, workload metrics.
+  - [`backend/app/schemas/note.py`](file:///d:/SelfProductivityApp/backend/app/schemas/note.py): Pydantic v2 schemas for notes and links.
+  - [`backend/app/schemas/system.py`](file:///d:/SelfProductivityApp/backend/app/schemas/system.py): Pydantic v2 schemas for shutdown / status.
+  - [`backend/app/api/v1/workspaces.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/workspaces.py): CRUD router for workspaces.
+  - [`backend/app/api/v1/tasks.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/tasks.py): CRUD router for tasks, subtasks, recurrence, history.
+  - [`backend/app/api/v1/goals.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/goals.py): CRUD router for goals and milestones with automated progress rollup.
+  - [`backend/app/api/v1/projects.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/projects.py): CRUD router for projects with task count aggregation.
+  - [`backend/app/api/v1/habits.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/habits.py): CRUD router for habits, check-ins, and streak calculation.
+  - [`backend/app/api/v1/focus.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/focus.py): CRUD router for focus sessions and task duration rollover.
+  - [`backend/app/api/v1/insights.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/insights.py): Deterministic analytics, daily reviews, and blocker tracker.
+  - [`backend/app/api/v1/notes.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/notes.py): CRUD router for supporting notes with automatic wikilink extraction (`[[Target]]`).
+  - [`backend/app/api/v1/system.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/system.py): System control endpoints (shutdown).
+  - [`backend/tests/test_auth_security.py`](file:///d:/SelfProductivityApp/backend/tests/test_auth_security.py): Security test suite for 401 rejection, valid token acceptance, and sensitive header redaction.
+  - [`backend/tests/test_workspaces.py`](file:///d:/SelfProductivityApp/backend/tests/test_workspaces.py): Workspaces CRUD and slug uniqueness tests.
+  - [`backend/tests/test_tasks.py`](file:///d:/SelfProductivityApp/backend/tests/test_tasks.py): Task audit history, subtask cascade deletion, and recurrence tests.
+  - [`backend/tests/test_goals_projects.py`](file:///d:/SelfProductivityApp/backend/tests/test_goals_projects.py): Milestone progress rollup, project linking, and cascade deletion tests.
+  - [`backend/tests/test_habits_focus.py`](file:///d:/SelfProductivityApp/backend/tests/test_habits_focus.py): Streak calculation and focus session duration rollover tests.
+  - [`backend/tests/test_reflection_notes.py`](file:///d:/SelfProductivityApp/backend/tests/test_reflection_notes.py): Daily reviews, blockers, deterministic workload insights, and wikilinks tests.
+- **Files Modified**:
+  - [`backend/pyproject.toml`](file:///d:/SelfProductivityApp/backend/pyproject.toml): Added `sqlalchemy>=2.0.36`, `alembic>=1.14.0`, and `pytest-cov>=6.0.0`.
+  - [`backend/app/config.py`](file:///d:/SelfProductivityApp/backend/app/config.py): Added `auth_token` setting for local authentication boundary.
+  - [`backend/app/main.py`](file:///d:/SelfProductivityApp/backend/app/main.py): Lifespan updated with `init_db()` and `engine.dispose()`; registered LoggingRedactionMiddleware, LocalAuthMiddleware, and all 9 API routers.
+  - [`backend/app/schemas/__init__.py`](file:///d:/SelfProductivityApp/backend/app/schemas/__init__.py): Re-exported all Pydantic schemas.
+  - [`backend/app/api/v1/__init__.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/__init__.py): Registered all routers.
+  - [`backend/tests/conftest.py`](file:///d:/SelfProductivityApp/backend/tests/conftest.py): Upgraded test engine to use SQLAlchemy `StaticPool` for thread-safe in-memory SQLite isolation.
+  - [`backend/tests/test_health.py`](file:///d:/SelfProductivityApp/backend/tests/test_health.py): Updated health expectations for connected database state.
+  - [`scripts/test-e2e.ps1`](file:///d:/SelfProductivityApp/scripts/test-e2e.ps1): Added live auth boundary verification (unauthenticated 401 vs authenticated 200) and verified `database: "connected"`.
+  - [`DECISIONS.md`](file:///d:/SelfProductivityApp/DECISIONS.md): Added ADR-010 covering SQLite Alembic batch mode and `StaticPool` test isolation.
+- **Commands & Tests Executed**:
+  1. `uv pip install "sqlalchemy>=2.0.36" "alembic>=1.14.0"` -> Exit 0. Installed SQLAlchemy 2.1.5, Alembic 1.20.0, Greenlet 3.3.2, Mako 1.3.10.
+  2. `alembic revision --autogenerate -m "initial_schema"` -> Exit 0. Generated migration `94a63b57f1cd_initial_schema.py`.
+  3. `alembic upgrade head` -> Exit 0. Applied migration `94a63b57f1cd` creating all 18 tables in `./data/app.db`.
+  4. `uv pip install pytest-cov` -> Exit 0. Installed coverage 7.16.2 and pytest-cov 7.1.0.
+  5. `backend\.venv\Scripts\python.exe -m pytest backend/tests --cov=backend.app --cov-report=term-missing` -> Exit 0:
+     - All 32 backend tests passed in 5.56s.
+     - Coverage: **85% across all 1347 statements** (exceeding >= 85% requirement).
+  6. `pnpm --filter frontend test` -> Exit 0. All 2 frontend tests passed in 302ms.
+  7. `pnpm --filter frontend build` -> Exit 0. Production bundle compiled cleanly in 991ms (`dist/index.html`, `dist/assets/index-DFECd_Rl.css`, `dist/assets/index-BgBOHp3t.js`).
+  8. `powershell -ExecutionPolicy Bypass -File scripts/test-e2e.ps1` -> Exit 0:
+     - Live uvicorn server started on `127.0.0.1:24125`.
+     - `GET /api/v1/health` responded 200 with truthful values: `database: "connected"`, `ai_available: false`.
+     - Unauthenticated `GET /api/v1/workspaces` rejected with HTTP 401 Unauthorized.
+     - Authenticated `GET /api/v1/workspaces` with bearer token returned 200 OK with default workspace `Personal`.
+     - Live CORS preflight allowed `http://localhost:5173`.
+     - Untrusted origin `http://malicious.com` rejected with HTTP 400 Bad Request.
+     - Process tree terminated cleanly leaving zero orphaned processes on port 24125.
+  9. Unified test suite `pnpm test` -> Exit 0. Executed all 34 tests (32 backend + 2 frontend) with 100% pass rate.
+- **Errors Encountered & Resolutions**:
+  - *Error*: Initial test run with `sqlite:///:memory:` failed with `OperationalError: no such table: workspaces` across FastAPI endpoints executed in background threadpool.
+    *Resolution*: Replaced default SQLite pool in `backend/tests/conftest.py` with SQLAlchemy `StaticPool` (`connect_args={"check_same_thread": False}, poolclass=StaticPool`), allowing all test client threads to share the in-memory database instance.
+- **Actual Results**:
+  - SQLite WAL mode connection management fully implemented and verified.
+  - All 18 SQLAlchemy 2.0 models and relationships for Four Pillars + Supporting Notes implemented.
+  - Alembic migrations fully configured with `render_as_batch=True`.
+  - Local authentication security boundary enforced with constant-time token comparison and sensitive header redaction.
+  - Complete REST API routers and Pydantic schemas implemented for all pillars.
+  - 100% test pass rate across 32 backend tests and 2 frontend tests; 85% code coverage.
+- **Milestone 2 Gate Status**: All acceptance criteria verified. Transitioning Milestone 2 to **`IN_REVIEW`**. Awaiting explicit user approval before beginning Milestone 3.
+
+
 

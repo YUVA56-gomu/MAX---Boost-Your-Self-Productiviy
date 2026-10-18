@@ -27,14 +27,33 @@ try {
     Write-Host "   active_model: $($resp.active_model)" -ForegroundColor Green
 
     # Truthful checks
-    if ($resp.database -ne "unconfigured") {
-        throw "Truth check failed: database should be 'unconfigured' in Milestone 1, got '$($resp.database)'"
+    if ($resp.database -ne "connected") {
+        throw "Truth check failed: database should be 'connected' in Milestone 2, got '$($resp.database)'"
     }
     if ($resp.ai_available -ne $false) {
-        throw "Truth check failed: ai_available should be false in Milestone 1 default state, got '$($resp.ai_available)'"
+        throw "Truth check failed: ai_available should be false in Milestone 2 default state, got '$($resp.ai_available)'"
     }
 
-    Write-Host "3. Testing CORS preflight from Vite dev origin http://localhost:5173..." -ForegroundColor Cyan
+    Write-Host "3. Testing Local Auth Security Boundary..." -ForegroundColor Cyan
+    try {
+        $unauthResp = Invoke-WebRequest -Uri "http://127.0.0.1:24125/api/v1/workspaces" -Method Get -TimeoutSec 3 -UseBasicParsing
+        throw "Auth check failed: unauthenticated request should return 401, got $($unauthResp.StatusCode)"
+    } catch {
+        if ($_.Exception.Response.StatusCode.value__ -eq 401) {
+            Write-Host "   Unauthenticated request rejected with 401 Unauthorized as expected." -ForegroundColor Green
+        } else {
+            throw "Auth check failed: expected 401, got: $($_.Exception.Message)"
+        }
+    }
+
+    $authToken = "dev-ephemeral-auth-token-32-bytes-local"
+    $authResp = Invoke-RestMethod -Uri "http://127.0.0.1:24125/api/v1/workspaces" -Method Get -Headers @{ "Authorization" = "Bearer $authToken" } -TimeoutSec 3
+    Write-Host "   Authenticated request succeeded: $($authResp.Count) workspace(s) found (Default: '$($authResp[0].name)')" -ForegroundColor Green
+    if ($authResp[0].slug -ne "personal") {
+        throw "Workspace check failed: expected default workspace 'personal', got '$($authResp[0].slug)'"
+    }
+
+    Write-Host "4. Testing CORS preflight from Vite dev origin http://localhost:5173..." -ForegroundColor Cyan
     $cors = Invoke-WebRequest -Uri "http://127.0.0.1:24125/api/v1/health" -Method Options -Headers @{ "Origin" = "http://localhost:5173"; "Access-Control-Request-Method" = "GET" } -UseBasicParsing -TimeoutSec 3
     $allowOrigin = $cors.Headers["access-control-allow-origin"]
     $allowMethods = $cors.Headers["access-control-allow-methods"]
@@ -45,7 +64,7 @@ try {
         throw "CORS check failed: expected allow-origin 'http://localhost:5173', got '$allowOrigin'"
     }
 
-    Write-Host "4. Testing CORS rejection from untrusted origin http://malicious.com..." -ForegroundColor Cyan
+    Write-Host "5. Testing CORS rejection from untrusted origin http://malicious.com..." -ForegroundColor Cyan
     try {
         $badCors = Invoke-WebRequest -Uri "http://127.0.0.1:24125/api/v1/health" -Method Options -Headers @{ "Origin" = "http://malicious.com"; "Access-Control-Request-Method" = "GET" } -UseBasicParsing -TimeoutSec 3
         $badOrigin = $badCors.Headers["access-control-allow-origin"]

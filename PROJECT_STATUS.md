@@ -1,9 +1,10 @@
 # Project Execution Status Dashboard
 
-**Last Updated**: `2026-10-18T14:24:00+05:30`  
-**Overall Project Status**: `IN_REVIEW`  
-**Active Milestone**: `Milestone 1: Repository Foundation & Dual-Runtime Bootstrap`  
-**Active Task**: `Task 1.6: Milestone 1 Completion Verification & Handoff`
+**Last Updated**: `2026-10-18T20:21:00+05:30`  
+**Overall Project Status**: `IN_PROGRESS`  
+**Active Milestone**: `Milestone 2: Core Data Engine & Backend Services (Four Pillars)`  
+**Active Milestone Status**: **`IN_REVIEW`** (Submitted for Human Gatekeeper Approval)  
+**Active Task**: `Task 2.7: Milestone 2 Completion Report & Verification Sign-Off` (`COMPLETED`)
 
 ---
 
@@ -12,9 +13,9 @@
 | Milestone | Phase Description | Status | Gatekeeper / Approval Status |
 | :--- | :--- | :--- | :--- |
 | **Milestone 0** | **Project Governance & Workspace Preparation** | **`COMPLETED`** | **Explicitly Approved by User on 2026-10-18** |
-| **Milestone 1** | **Repository Foundation & Dual-Runtime Bootstrap** | **`IN_REVIEW`** | **Awaiting User Review & Sign-Off** |
-| **Milestone 2** | **Core Data Engine & Backend Services (Four Pillars)**| `NOT_STARTED` | Locked pending Milestone 1 completion |
-| **Milestone 3** | **Desktop Shell Integration (Tauri 2)** | `NOT_STARTED` | Locked pending Milestone 2 completion |
+| **Milestone 1** | **Repository Foundation & Dual-Runtime Bootstrap** | **`COMPLETED`** | **Explicitly Approved by User on 2026-10-18** |
+| **Milestone 2** | **Core Data Engine & Backend Services (Four Pillars)**| **`IN_REVIEW`** | **Pending User Review & Approval** |
+| **Milestone 3** | **Desktop Shell Integration (Tauri 2)** | `NOT_STARTED` | Locked pending Milestone 2 approval |
 | **Milestone 4** | **Gemini-Dark UI - Execution & Goals Canvas** | `NOT_STARTED` | Locked pending Milestone 3 completion |
 | **Milestone 5** | **Habits, Focus Engine & Insights Dashboard** | `NOT_STARTED` | Locked pending Milestone 4 completion |
 | **Milestone 6** | **Optional Local AI (Ollama + Gemma 2 2B)** | `NOT_STARTED` | Locked pending Milestone 5 completion |
@@ -69,7 +70,7 @@
 
 ---
 
-## 3. Milestone 1 Task Breakdown & Verified Acceptance (`IN_REVIEW`)
+## 3. Milestone 1 Task Breakdown & Verified Acceptance (`COMPLETED`)
 
 ### Tasks & Subtasks
 - [x] **Task 1.1: Git Repository Initialization & Root Configuration** (`COMPLETED`)
@@ -124,7 +125,54 @@
 
 ---
 
-## 5. Outstanding Bugs, Blockers & Known Limitations
+## 5. Milestone 2 Task Breakdown & Verified Acceptance (`IN_REVIEW`)
+
+### Tasks & Subtasks
+- [x] **Task 2.1: SQLite Connection Management & Lifespan Session Pool** (`COMPLETED`)
+  - [x] Configure `backend/app/db/session.py` with `create_engine`, `sessionmaker`, and SQLite connection listener.
+  - [x] Enforce SQLite PRAGMAs: `journal_mode=WAL`, `synchronous=NORMAL`, `foreign_keys=ON`, `busy_timeout=5000`.
+  - [x] Wire database session dependency `get_db` into FastAPI routers.
+  - [x] Update `/api/v1/health` to execute real `SELECT 1` ping and truthfully report `"database": "connected"`.
+- [x] **Task 2.2: SQLAlchemy 2.0 Declarative Models (Four Pillars + Supporting)** (`COMPLETED`)
+  - [x] Workspaces: `workspaces` table (`id`, `name`, `slug`, `color`, `icon`, `is_default`, timestamps) with seed initializer.
+  - [x] Pillar 1 (Tasks): `tasks`, `task_recurrence_rules`, `task_history`, `tags`, `task_tags`.
+  - [x] Pillar 2 (Goals & Projects): `goals`, `goal_milestones`, `projects`.
+  - [x] Pillar 3 (Habits & Focus): `habits`, `habit_logs`, `focus_sessions`.
+  - [x] Pillar 4 (Insights & Reflection): `daily_reviews`, `blockers`, `daily_metrics`.
+  - [x] Supporting: `notes`, `note_links`, `ai_audit_logs`.
+- [x] **Task 2.3: Alembic Migrations Setup & Initial Baseline Migration** (`COMPLETED`)
+  - [x] Configure `backend/alembic/env.py` with `target_metadata = Base.metadata` and `render_as_batch=True` for SQLite compatibility.
+  - [x] Generate reproducible initial migration (`backend/alembic/versions/94a63b57f1cd_initial_schema.py`).
+  - [x] Verify migration execution from clean state (`alembic upgrade head`) creating all 18 tables.
+- [x] **Task 2.4: Constant-Time Authentication & Sensitive Header Redaction Middleware** (`COMPLETED`)
+  - [x] In-memory/environment `auth_token` verification using constant-time `secrets.compare_digest`.
+  - [x] 401 Unauthorized rejection for missing or invalid bearer tokens on all protected routes.
+  - [x] Sensitive header redaction middleware (`Authorization`, `Cookie`, `X-Auth-Token` -> `[REDACTED]`).
+- [x] **Task 2.5: CRUD API Routers & Pydantic v2 Schemas** (`COMPLETED`)
+  - [x] Routers matching `API_CONTRACTS.md`: `/workspaces`, `/tasks`, `/goals`, `/projects`, `/habits`, `/focus`, `/insights`, `/notes`, `/system`.
+  - [x] Pydantic v2 request/response schemas with validation across all entities.
+- [x] **Task 2.6: Pytest Suite & Verification** (`COMPLETED`)
+  - [x] In-memory SQLite test fixtures using SQLAlchemy `StaticPool`.
+  - [x] Relationships, cascades, CRUD, validation, auth security, and isolation tests (32 tests passed, 85% coverage).
+
+---
+
+## 6. Verified Acceptance Criteria Checklist (Milestone 2)
+
+- [x] **SQLite Connection Management with WAL**: Configured in `backend/app/db/session.py` with `journal_mode=WAL`, `synchronous=NORMAL`, `foreign_keys=ON`, and `busy_timeout=5000`. Verified via engine connection event listener.
+- [x] **SQLAlchemy 2.0 Canonical Data Model Complete**: All 18 mapped models for Four Pillars + Supporting Notes implemented matching `DATA_MODEL.md`.
+- [x] **Alembic Migrations Operational**: Baseline migration `94a63b57f1cd_initial_schema.py` applied cleanly via `alembic upgrade head` with `render_as_batch=True`.
+- [x] **Database Initialization Seed Verified**: `backend/app/db/init_db.py` creates default `Personal` workspace (`id="default"`, `slug="personal"`).
+- [x] **Local Authentication Security Enforced**: Constant-time `secrets.compare_digest` protects all non-public endpoints; unauthenticated requests receive HTTP 401; public endpoints (`/api/v1/health`, `/`, docs, CORS preflight) accessible.
+- [x] **Sensitive Credential Redaction Active**: Middleware masks `Authorization`, `Cookie`, and `X-Auth-Token` to `[REDACTED]` in request logs.
+- [x] **CRUD Routers & Pydantic Schemas Complete**: Full endpoint coverage across Tasks, Goals, Projects, Habits, Focus, Reviews, Blockers, Insights, Notes, and Workspaces matching `API_CONTRACTS.md`.
+- [x] **Deterministic Analytics**: Workload ratios and analytics computed via direct SQLite queries; zero AI dependencies in core services.
+- [x] **Automated Test Coverage Met**: Pytest suite achieves 85% coverage (1347 statements, 32 passed); unified `pnpm test` (32 backend + 2 frontend) passes 100%.
+- [x] **Truthful Health Reporting Active**: `GET /api/v1/health` returns `database: "connected"`, `status: "healthy"`, `ai_available: false`.
+
+---
+
+## 7. Outstanding Bugs, Blockers & Known Limitations
 
 | Item ID | Classification | Description | Impact | Target Milestone |
 | :--- | :--- | :--- | :--- | :--- |
@@ -133,7 +181,7 @@
 
 ---
 
-## 6. Architectural Decision Status Summary
+## 8. Architectural Decision Status Summary
 
 - **ADR-001 (Accepted)**: Local-first architecture with SQLite WAL mode.
 - **ADR-002 (Accepted)**: Tauri 2 desktop shell.
@@ -144,6 +192,7 @@
 - **ADR-007 (Accepted)**: Ephemeral in-memory token security model (never persistent storage).
 - **ADR-008 (Accepted)**: Testing stack: Pytest + Vitest + dedicated security test suite.
 - **ADR-009 (Accepted)**: Entity identification using UUIDv4 strings.
+- **ADR-010 (Accepted)**: SQLite Migration Strategy (Alembic Batch Mode) & Test Isolation (StaticPool).
 - **`[OPEN-001]`**: Rust toolchain installation — **`DEFERRED TO MILESTONE 3`**.
 - **`[OPEN-002]`**: Production Python packaging strategy — **`DEFERRED TO MILESTONE 3 / 7`**.
 - **`[OPEN-003]`**: Rich markdown editor component selection — **`DEFERRED TO MILESTONE 4`**.
@@ -153,8 +202,9 @@
 
 ---
 
-## 7. Exact Next Recommended Action
+## 9. Exact Next Recommended Action
 
-1. **User Action**: Review Milestone 1 completion verification report and provide explicit approval to mark Milestone 1 `COMPLETED`.
-2. **Immediate Subsequent Milestone**: Begin **Milestone 2: Core Data Engine & Backend Services (Four Pillars)** (Task 2.1: SQLite WAL connection pool & SQLAlchemy 2.0 mapped models).
+1. **User Action**: Review the Milestone 2 completion verification report and provide explicit approval to mark Milestone 2 as `COMPLETED`.
+2. **Immediate Subsequent Milestone**: Upon user approval, begin **Milestone 3: Desktop Shell Integration (Tauri 2)** (Task 3.1: Rust toolchain setup & Tauri 2 sidecar lifecycle integration).
+
 

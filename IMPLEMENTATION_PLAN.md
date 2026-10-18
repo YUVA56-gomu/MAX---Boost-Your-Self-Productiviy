@@ -65,8 +65,8 @@ gantt
 ---
 
 ### Milestone 1: Repository Foundation & Dual-Runtime Bootstrap
-- **Status**: **`IN_REVIEW`**
-- **Review & Approval Status**: **Awaiting User Review & Sign-Off**
+- **Status**: **`COMPLETED`**
+- **Review & Approval Status**: **Explicitly Approved by User on 2026-10-18**
 - **Objective & Scope**: Establish project directory structure, initialize Git version control, scaffold Vite + React frontend and Python 3.14 FastAPI backend with `uv`, and configure browser-mode development runner with in-memory token harness.
 - **Prerequisites**: Approval of Milestone 0 (Satisfied on 2026-10-18).
 - **Ordered Implementation Tasks**:
@@ -91,36 +91,40 @@ gantt
   - `pnpm lint` (Pass - 0 errors, 0 warnings across 9 files)
   - `powershell -ExecutionPolicy Bypass -File scripts/test-e2e.ps1` (Pass - live probe, CORS preflight, bad origin rejection, clean shutdown)
 - **Dependencies & Blockers**: None (browser dev mode active).
-- **Completion Evidence**: Git commits `cd5e08c`, `2baf5ac`; terminal logs recorded in `TASK_LOG.md`; verified live probe response.
+- **Completion Evidence**: Git commits `cd5e08c`, `2baf5ac`, `b5dcd3a`; terminal logs recorded in `TASK_LOG.md`; verified live probe response.
 
 ---
 
 ### Milestone 2: Core Data Engine & Backend Services (Four Pillars)
-- **Status**: **`NOT_STARTED`**
-- **Review & Approval Status**: Pending
+- **Status**: **`IN_REVIEW`**
+- **Review & Approval Status**: Submitted for User Review & Sign-Off (2026-10-18)
 - **Objective & Scope**: Implement complete relational persistence layer in SQLite (WAL mode) and REST APIs in FastAPI across all four core pillars + supporting notes, secured by constant-time token comparison and log redaction.
-- **Prerequisites**: Milestone 1 approved.
+- **Prerequisites**: Milestone 1 approved (Satisfied on 2026-10-18).
 - **Ordered Implementation Tasks**:
-  - [ ] **Task 2.1**: Configure SQLite database connection manager with WAL mode (`PRAGMA journal_mode=WAL`), foreign keys (`PRAGMA foreign_keys=ON`), and busy timeout.
-  - [ ] **Task 2.2**: Implement SQLAlchemy 2.0 mapped models for all entities:
+  - [x] **Task 2.1**: Configure SQLite database connection manager with WAL mode (`PRAGMA journal_mode=WAL`), foreign keys (`PRAGMA foreign_keys=ON`), normal synchronous mode, and busy timeout (`5000ms`) in `backend/app/db/session.py`.
+  - [x] **Task 2.2**: Implement SQLAlchemy 2.0 mapped models for all entities:
     - Pillar 1: `tasks`, `task_recurrence_rules`, `task_history`, `tags`, `task_tags`.
     - Pillar 2: `goals`, `goal_milestones`, `projects`.
     - Pillar 3: `habits`, `habit_logs`, `focus_sessions`.
     - Pillar 4: `daily_reviews`, `blockers`, `daily_metrics`.
     - Supporting: `notes`, `note_links`, and `ai_audit_logs`.
-  - [ ] **Task 2.3**: Configure Alembic migrations (`render_as_batch=True`) and generate baseline migration script.
-  - [ ] **Task 2.4**: Implement security middleware: constant-time token comparison (`secrets.compare_digest`), 401 rejection for unauthenticated requests, and log redaction.
-  - [ ] **Task 2.5**: Implement CRUD endpoint routers matching `API_CONTRACTS.md` for all 4 pillars and supporting notes.
-  - [ ] **Task 2.6**: Build Pytest test suite with in-memory SQLite fixtures and security test cases.
-  - [ ] **Task 2.7**: Author Milestone 2 completion report.
+    - Workspaces: `workspaces` table with seed initializer (`Personal` default).
+  - [x] **Task 2.3**: Configure Alembic migrations (`render_as_batch=True`) in `backend/alembic/env.py` and generate initial baseline migration script (`94a63b57f1cd_initial_schema.py`); verified execution via `alembic upgrade head`.
+  - [x] **Task 2.4**: Implement security middleware: constant-time token comparison (`secrets.compare_digest`), 401 rejection for unauthenticated requests, and sensitive header/token log redaction middleware.
+  - [x] **Task 2.5**: Implement CRUD endpoint routers and Pydantic v2 schemas matching `API_CONTRACTS.md` for all 4 pillars and supporting notes (`/workspaces`, `/tasks`, `/goals`, `/projects`, `/habits`, `/focus`, `/insights`, `/notes`, `/system`).
+  - [x] **Task 2.6**: Build Pytest test suite with in-memory SQLite fixtures (`StaticPool`), relationships, cascades, CRUD, validation, auth security, and isolation tests (32 tests passing, 85% coverage).
+  - [x] **Task 2.7**: Author Milestone 2 completion report and update tracking documents.
 - **Acceptance Criteria**:
-  - `alembic upgrade head` applies cleanly.
-  - Pytest test suite achieves >= 85% coverage across routes and models.
-  - Security tests verify unauthenticated requests are rejected with 401 and tokens are redacted from logs.
+  - [x] `alembic upgrade head` applies cleanly without errors.
+  - [x] Pytest test suite achieves >= 85% coverage across routes and models (85% verified across 1347 statements).
+  - [x] Security tests verify unauthenticated requests are rejected with 401 and tokens are redacted from logs (`test_auth_security.py` passes 5/5; verified live via `scripts/test-e2e.ps1`).
+  - [x] Truthful health reporting verified (`database: "connected"`, `ai_available: false`).
 - **Required Verification Commands**:
-  - `python -m pytest backend/tests -v --cov=backend/app`
-- **Dependencies & Blockers**: Python 3.14 venv from Milestone 1.
-- **Completion Evidence**: Verifiable Pytest test execution logs recorded in `TASK_LOG.md`.
+  - `python -m pytest backend/tests -v --cov=backend.app --cov-report=term-missing` (Pass - 32 passed, 85% coverage)
+  - `pnpm test` (Pass - 32 backend in 2.67s, 2 frontend in 1.62s)
+  - `powershell -ExecutionPolicy Bypass -File scripts/test-e2e.ps1` (Pass - connected DB, auth rejection, authenticated query, clean shutdown)
+- **Dependencies & Blockers**: None.
+- **Completion Evidence**: Alembic revision `94a63b57f1cd_initial_schema.py`; Pytest 32/32 tests passed; E2E probe logs recorded in `TASK_LOG.md`.
 
 ---
 

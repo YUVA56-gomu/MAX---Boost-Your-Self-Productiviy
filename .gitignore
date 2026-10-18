@@ -20,6 +20,8 @@ src-tauri/target/
 .mypy_cache/
 coverage/
 htmlcov/
+.coverage
+.coverage.*
 .vite/
 frontend/.vite/
 

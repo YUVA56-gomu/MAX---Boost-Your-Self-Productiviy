@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     # Local SQLite database path - connection pool initialized in Milestone 2
     database_url: str = "sqlite:///./data/app.db"
 
+    # Ephemeral 32-byte authorization token injected via APP_AUTH_TOKEN
+    auth_token: str = "dev-ephemeral-auth-token-32-bytes-local"
+
     # Local AI (Ollama) settings - full application service scheduled for Milestone 6
     ai_enabled: bool = False
     ollama_base_url: str = "http://127.0.0.1:11434"

@@ -1,18 +1,24 @@
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.config import settings
 from backend.app.api.v1 import api_v1_router
+from backend.app.db.init_db import init_db
+from backend.app.middleware.auth import AuthenticationMiddleware
+from backend.app.middleware.logging import SensitiveHeaderRedactionMiddleware
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan context for startup initialization and graceful shutdown."""
-    # Startup: ensure local data directory exists
-    import os
+    # Startup: ensure local data directory and database initialized
     os.makedirs("./data", exist_ok=True)
+    init_db()
     yield
-    # Shutdown: clean up open connections if needed
+    # Shutdown: clean up open database pool connections
+    from backend.app.db.session import engine
+    engine.dispose()
 
 
 app = FastAPI(
@@ -22,7 +28,13 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Strict CORS restriction for local development and Tauri webview
+# Authentication middleware enforces 401 on non-public endpoints
+app.add_middleware(AuthenticationMiddleware)
+
+# Sensitive header redaction middleware intercepts headers before logging
+app.add_middleware(SensitiveHeaderRedactionMiddleware)
+
+# Strict CORS restriction for local development and Tauri webview (outermost)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,

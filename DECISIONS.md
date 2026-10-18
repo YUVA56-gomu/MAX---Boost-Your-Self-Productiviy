@@ -86,6 +86,14 @@ Per project governance, every decision is explicit. **Any unresolved or intentio
 
 ---
 
+### ADR-010: SQLite Migration Strategy (Alembic Batch Mode) & Test Isolation (StaticPool)
+- **Status**: **ACCEPTED**
+- **Context**: SQLite has structural limitations with certain `ALTER TABLE` statements (e.g. constraint changes require table copy-rebuild), and default in-memory SQLite connections (`sqlite:///:memory:`) create isolated databases per connection unless pinned to a single connection pool.
+- **Decision**: Configure Alembic with `render_as_batch=True` in `backend/alembic/env.py` to enable declarative batch table migrations. Configure backend test fixtures using SQLAlchemy `StaticPool` (`connect_args={"check_same_thread": False}, poolclass=StaticPool`) to guarantee consistent, thread-safe in-memory database isolation across FastAPI `TestClient` calls.
+- **Consequences**: Safe migrations on SQLite without external tooling; deterministic, sub-second test execution across all 32 backend tests.
+
+---
+
 ## 3. Catalog of Deferred & Open Decisions
 
 ### [OPEN-001]: Rust Toolchain Setup for Tauri 2 Development

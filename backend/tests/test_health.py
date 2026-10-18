@@ -4,28 +4,22 @@ from backend.app.config import settings
 from backend.app.api.v1.health import check_database_status, check_ai_status
 
 
-def test_health_default_milestone_1_state(client):
-    """Test that /api/v1/health returns truthful status for Milestone 1:
-    - Status is healthy (server running)
-    - Version is 0.1.0
-    - Database is 'unconfigured' (SQLite connection pool scheduled for Milestone 2)
-    - AI is unavailable (Ollama integration scheduled for Milestone 6)
-    """
+def test_health_milestone_2_connected_state(client):
+    """Test that /api/v1/health returns healthy and database connected in Milestone 2."""
     response = client.get("/api/v1/health")
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "healthy"
     assert data["version"] == "0.1.0"
-    assert data["database"] == "unconfigured"
+    assert data["database"] == "connected"
     assert data["ai_available"] is False
     assert data["active_model"] is None
 
 
-def test_database_status_truthful_when_uninitialized():
-    """Verify check_database_status() truthfully reports 'unconfigured' and never falsely claims 'connected'."""
+def test_database_status_truthful_connected():
+    """Verify check_database_status() returns 'connected' with live SQLite engine."""
     status = check_database_status()
-    assert status == "unconfigured"
-    assert status != "connected"
+    assert status == "connected"
 
 
 @pytest.mark.anyio
@@ -105,7 +99,7 @@ def test_cors_disallowed_external_origin(client):
 
 
 def test_root_endpoint(client):
-    """Test that root / endpoint returns online status."""
+    """Test that root / endpoint returns online status without authentication."""
     response = client.get("/")
     assert response.status_code == 200
     data = response.json()
