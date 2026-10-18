@@ -21,12 +21,50 @@ async def lifespan(app: FastAPI):
     engine.dispose()
 
 
+import logging
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from fastapi import Request
+
+logger = logging.getLogger("backend.security")
+
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
     description="Local-First Adaptive Productivity Desktop Application Backend",
     lifespan=lifespan,
+    docs_url="/docs" if settings.app_env != "production" else None,
+    redoc_url="/redoc" if settings.app_env != "production" else None,
+    openapi_url="/openapi.json" if settings.app_env != "production" else None,
 )
+
+# Exception handlers ensuring no stack traces or database internals leak
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+        headers=getattr(exc, "headers", None),
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors()},
+    )
+
+
+@app.exception_handler(Exception)
+async def generic_exception_handler(request: Request, exc: Exception):
+    logger.error("Internal unhandled error: %s on %s %s", type(exc).__name__, request.method, request.url.path)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An internal server error occurred"},
+    )
+
 
 # Authentication middleware enforces 401 on non-public endpoints
 app.add_middleware(AuthenticationMiddleware)
@@ -54,7 +92,7 @@ async def root():
         "app": settings.app_name,
         "version": settings.app_version,
         "status": "online",
-        "docs_url": "/docs",
+        "docs_url": "/docs" if settings.app_env != "production" else None,
     }
 
 

@@ -83,9 +83,43 @@ def list_tasks(
     return [serialize_task(t) for t in tasks]
 
 
+from backend.app.models.workspace import Workspace
+from backend.app.models.project import Project
+from backend.app.models.goal import Goal
+
+
 @router.post("", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
 def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
     """Create a new task and record initial creation history."""
+    # Validate workspace existence
+    ws = db.query(Workspace).filter(Workspace.id == payload.workspace_id).first()
+    if not ws:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Workspace '{payload.workspace_id}' not found")
+
+    # Validate parent task hierarchy & workspace matching
+    if payload.parent_id:
+        parent = db.query(Task).filter(Task.id == payload.parent_id).first()
+        if not parent:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Parent task '{payload.parent_id}' not found")
+        if parent.workspace_id != payload.workspace_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Subtask must belong to the same workspace as parent task")
+
+    # Validate project belongs to same workspace
+    if payload.project_id:
+        proj = db.query(Project).filter(Project.id == payload.project_id).first()
+        if not proj:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Project '{payload.project_id}' not found")
+        if proj.workspace_id != payload.workspace_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Task project must belong to the same workspace")
+
+    # Validate goal belongs to same workspace
+    if payload.goal_id:
+        goal = db.query(Goal).filter(Goal.id == payload.goal_id).first()
+        if not goal:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Goal '{payload.goal_id}' not found")
+        if goal.workspace_id != payload.workspace_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Task goal must belong to the same workspace")
+
     task_data = payload.model_dump()
     task = Task(**task_data)
     db.add(task)
@@ -121,6 +155,32 @@ def update_task(task_id: str, payload: TaskUpdate, db: Session = Depends(get_db)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
 
     update_data = payload.model_dump(exclude_unset=True)
+
+    # Validate parent_id updates
+    if "parent_id" in update_data and update_data["parent_id"] is not None:
+        if update_data["parent_id"] == task.id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="A task cannot be its own parent")
+        parent = db.query(Task).filter(Task.id == update_data["parent_id"]).first()
+        if not parent:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Parent task '{update_data['parent_id']}' not found")
+        if parent.workspace_id != task.workspace_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Subtask must belong to the same workspace as parent task")
+
+    # Validate project_id updates
+    if "project_id" in update_data and update_data["project_id"] is not None:
+        proj = db.query(Project).filter(Project.id == update_data["project_id"]).first()
+        if not proj:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Project '{update_data['project_id']}' not found")
+        if proj.workspace_id != task.workspace_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Task project must belong to the same workspace")
+
+    # Validate goal_id updates
+    if "goal_id" in update_data and update_data["goal_id"] is not None:
+        goal = db.query(Goal).filter(Goal.id == update_data["goal_id"]).first()
+        if not goal:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Goal '{update_data['goal_id']}' not found")
+        if goal.workspace_id != task.workspace_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Task goal must belong to the same workspace")
 
     for field, new_val in update_data.items():
         old_val = getattr(task, field)

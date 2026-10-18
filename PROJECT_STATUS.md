@@ -160,14 +160,19 @@
 ## 6. Verified Acceptance Criteria Checklist (Milestone 2)
 
 - [x] **SQLite Connection Management with WAL**: Configured in `backend/app/db/session.py` with `journal_mode=WAL`, `synchronous=NORMAL`, `foreign_keys=ON`, and `busy_timeout=5000`. Verified via engine connection event listener.
-- [x] **SQLAlchemy 2.0 Canonical Data Model Complete**: All 18 mapped models for Four Pillars + Supporting Notes implemented matching `DATA_MODEL.md`.
-- [x] **Alembic Migrations Operational**: Baseline migration `94a63b57f1cd_initial_schema.py` applied cleanly via `alembic upgrade head` with `render_as_batch=True`.
-- [x] **Database Initialization Seed Verified**: `backend/app/db/init_db.py` creates default `Personal` workspace (`id="default"`, `slug="personal"`).
-- [x] **Local Authentication Security Enforced**: Constant-time `secrets.compare_digest` protects all non-public endpoints; unauthenticated requests receive HTTP 401; public endpoints (`/api/v1/health`, `/`, docs, CORS preflight) accessible.
+- [x] **SQLAlchemy 2.0 Canonical Relational Data Model Complete**: All 18 mapped models for Four Pillars + Supporting Notes implemented matching `DATA_MODEL.md`.
+- [x] **Alembic Migrations Operational & Zero Schema Drift**: Baseline migration `94a63b57f1cd_initial_schema.py` applied cleanly via `alembic upgrade head` with `render_as_batch=True`. Verified `alembic check` passes with zero schema drift. Fresh temporary database migration tested from scratch.
+- [x] **Database Initialization Seed Verified & Idempotent**: `backend/app/db/init_db.py` creates default `Personal` workspace (`id="default"`, `slug="personal"`). Verified safe against repeated execution.
+- [x] **Local Authentication Security Enforced**: Constant-time `secrets.compare_digest` protects all non-public endpoints; unauthenticated requests receive HTTP 401; public endpoints (`/api/v1/health`, `/`, docs, CORS preflight) accessible without data leakage.
+- [x] **Environment Token Separation Enforced**: In production mode (`APP_ENV=production`), missing, empty, or fallback dev tokens are strictly rejected on boot with `ValueError`.
+- [x] **Safe Error Handling Active**: Generic exception handler ensures unexpected server crashes return clean `{"detail": "An internal server error occurred"}` without leaking internal paths, traces, or SQL schemas.
+- [x] **Workspace Data Isolation & Integrity Verified**: Cross-workspace task queries return strictly isolated records; cross-workspace subtask/parent/project/goal assignments are rejected with 400 Bad Request; self-parenting task loops prevented.
+- [x] **Relationship Cascades & Audit History Verified**: Workspace deletion cascades to all enclosed entities; parent task deletion cascades to subtasks and history; all task mutations record itemized audit history entries.
+- [x] **Edge-Case Logic Hardened**: Habit streaks reset to 0 when completed logs are unchecked; focus sessions cannot be completed twice to prevent duplicate task minute rollover; goal progress percentage calculation verified across milestone states.
+- [x] **Transaction Rollbacks Verified**: Failed mutations (e.g. foreign key constraint violation) cleanly roll back database transaction leaving zero orphaned records.
 - [x] **Sensitive Credential Redaction Active**: Middleware masks `Authorization`, `Cookie`, and `X-Auth-Token` to `[REDACTED]` in request logs.
-- [x] **CRUD Routers & Pydantic Schemas Complete**: Full endpoint coverage across Tasks, Goals, Projects, Habits, Focus, Reviews, Blockers, Insights, Notes, and Workspaces matching `API_CONTRACTS.md`.
 - [x] **Deterministic Analytics**: Workload ratios and analytics computed via direct SQLite queries; zero AI dependencies in core services.
-- [x] **Automated Test Coverage Met**: Pytest suite achieves 85% coverage (1347 statements, 32 passed); unified `pnpm test` (32 backend + 2 frontend) passes 100%.
+- [x] **Automated Test Coverage Met**: Pytest suite achieves 85% coverage across 1423 statements (43 backend tests passing); unified `pnpm test` (43 backend + 2 frontend) passes 100%.
 - [x] **Truthful Health Reporting Active**: `GET /api/v1/health` returns `database: "connected"`, `status: "healthy"`, `ai_available: false`.
 
 ---

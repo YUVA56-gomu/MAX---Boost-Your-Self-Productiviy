@@ -155,6 +155,8 @@ def log_habit_execution(habit_id: str, payload: HabitLogCreate, db: Session = De
         habit.current_streak = streak
         if habit.current_streak > habit.best_streak:
             habit.best_streak = habit.current_streak
+    else:
+        habit.current_streak = 0
 
     db.commit()
     db.refresh(log)

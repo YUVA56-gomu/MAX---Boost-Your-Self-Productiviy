@@ -296,5 +296,41 @@ All engineering activities, terminal executions, file modifications, and test ve
   - 100% test pass rate across 32 backend tests and 2 frontend tests; 85% code coverage.
 - **Milestone 2 Gate Status**: All acceptance criteria verified. Transitioning Milestone 2 to **`IN_REVIEW`**. Awaiting explicit user approval before beginning Milestone 3.
 
+---
+
+### Session 8: Milestone 2 Security and Data-Integrity Focused Audit
+- **Date & Time**: `2026-10-18T20:38:00+05:30`
+- **Milestone & Task**: `Milestone 2: Security & Data-Integrity Audit (IN_REVIEW)`
+- **User Action**: Mandated focused audit across Authentication/API Security, Workspace Isolation & Data Integrity, and Migration/Database Reliability before final Milestone 2 approval.
+- **Files Created**:
+  - [`backend/tests/test_audit_security_integrity.py`](file:///d:/SelfProductivityApp/backend/tests/test_audit_security_integrity.py): Comprehensive regression and audit test suite covering token environment validation, protected data leakage prevention, unhandled exception sanitation, workspace filtering isolation, cross-workspace relationship rejection, self-parenting loop prevention, cascade deletion, habit streak edge cases, focus session double-completion prevention, fresh temporary DB migrations from zero, and transaction rollbacks (11 dedicated tests).
+- **Files Modified**:
+  - [`alembic.ini`](file:///d:/SelfProductivityApp/alembic.ini): Configured default `sqlalchemy.url = sqlite:///./data/app.db`.
+  - [`backend/alembic/env.py`](file:///d:/SelfProductivityApp/backend/alembic/env.py): Updated `run_migrations_online()` to respect custom `sqlalchemy.url` dynamically configured via Alembic Config (allowing programmatic migrations on temporary test databases).
+  - [`backend/app/config.py`](file:///d:/SelfProductivityApp/backend/app/config.py): Added `app_env` setting (`development`, `test`, `production`) and added Pydantic `@model_validator` strictly rejecting missing, empty, or fallback dev tokens in production mode (`APP_ENV=production`).
+  - [`backend/app/middleware/auth.py`](file:///d:/SelfProductivityApp/backend/app/middleware/auth.py): Restricted public documentation endpoints (`/docs`, `/redoc`, `/openapi.json`) to non-production environments only.
+  - [`backend/app/main.py`](file:///d:/SelfProductivityApp/backend/app/main.py): Disabled Swagger/OpenAPI docs in production mode; added global exception handler ensuring unexpected errors return clean `{"detail": "An internal server error occurred"}` without leaking internal traces or SQL schemas.
+  - [`backend/app/api/v1/tasks.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/tasks.py): Added relationship validations: rejecting non-existent workspaces, cross-workspace subtask/project/goal assignments, and self-parenting loops with HTTP 400.
+  - [`backend/app/api/v1/habits.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/habits.py): Handled edge case where unchecking all completed logs properly resets `current_streak` to 0.
+  - [`backend/app/api/v1/focus.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/focus.py): Prevented double-completion of focus sessions with HTTP 400 to prevent duplicated task minute rollovers.
+  - [`backend/tests/conftest.py`](file:///d:/SelfProductivityApp/backend/tests/conftest.py): Added `raise_server_exceptions=False` to TestClient fixture to enable inspecting 500 responses without client crash.
+  - [`PROJECT_STATUS.md`](file:///d:/SelfProductivityApp/PROJECT_STATUS.md): Updated with audited criteria and test verification evidence.
+- **Commands & Tests Executed**:
+  1. `backend\.venv\Scripts\alembic.exe check` -> Exit 0. Verified zero schema drift between current SQLAlchemy models and migration history.
+  2. `backend\.venv\Scripts\python.exe -m pytest backend/tests/test_audit_security_integrity.py -v` -> Exit 0. All 11 audit tests passed in 0.65s.
+  3. `backend\.venv\Scripts\python.exe -m pytest backend/tests --cov=backend.app --cov-report=term-missing` -> Exit 0. All 43 backend tests passed in 2.46s (85% coverage across 1423 statements).
+  4. `pnpm --filter frontend test` -> Exit 0. All 2 frontend tests passed in 97ms.
+  5. `pnpm --filter frontend run lint` -> Exit 0. 0 errors, 0 warnings across 9 files in 64ms.
+  6. `pnpm --filter frontend build` -> Exit 0. Production bundle compiled cleanly in 503ms (`tsc -b && vite build`).
+  7. `powershell -ExecutionPolicy Bypass -File scripts/test-e2e.ps1` -> Exit 0. Live probe passed: truthful healthcheck, 401 unauthenticated rejection, 200 authenticated workspace query, CORS preflight and untrusted origin rejection, clean shutdown with 0 orphaned processes.
+  8. `pnpm test` -> Exit 0. Unified test suite executed 45 tests (43 backend + 2 frontend) with 100% pass rate.
+- **Actual Results**:
+  - Production token separation strictly enforced; default/dev token rejected in production.
+  - Safe error handling prevents stack trace or database path leaks.
+  - Workspace boundaries and relationship integrity fully verified by tests.
+  - Migration from zero on fresh database and transaction rollbacks fully verified.
+- **Milestone 2 Gate Status**: Audit completed and verified. Milestone 2 remains strictly **`IN_REVIEW`**. Awaiting human gatekeeper approval before proceeding to Milestone 3.
+
+
 
 

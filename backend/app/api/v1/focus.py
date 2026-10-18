@@ -55,6 +55,8 @@ def complete_focus_session(session_id: str, payload: FocusSessionComplete, db: S
     session = db.query(FocusSession).filter(FocusSession.id == session_id).first()
     if not session:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Focus session not found")
+    if session.is_completed:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Focus session has already been completed")
 
     session.ended_at = datetime.now(timezone.utc)
     session.duration_seconds = payload.duration_seconds

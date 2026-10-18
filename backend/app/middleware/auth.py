@@ -24,7 +24,15 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
 
         # Check public paths
         path = request.url.path.rstrip("/")
-        if path in PUBLIC_PATHS or path == "" or path.startswith("/docs") or path.startswith("/redoc"):
+        if path in {"/api/v1/health", ""}:
+            return await call_next(request)
+
+        # Docs and OpenAPI schema are public ONLY in non-production environments
+        if settings.app_env != "production" and (
+            path in {"/docs", "/redoc", "/openapi.json"}
+            or path.startswith("/docs")
+            or path.startswith("/redoc")
+        ):
             return await call_next(request)
 
         auth_header = request.headers.get("Authorization")
