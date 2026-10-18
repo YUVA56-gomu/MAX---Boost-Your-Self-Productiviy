@@ -8,16 +8,16 @@ describe('App Component', () => {
     vi.unstubAllGlobals()
   })
 
-  it('renders application branding and header elements', async () => {
-    // Mock successful healthcheck fetch
+  it('renders application branding, shadcn components, and truthful health data', async () => {
+    // Mock truthful Milestone 1 healthcheck fetch: unconfigured DB, unconfigured AI
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
         status: 'healthy',
         version: '0.1.0',
-        database: 'connected',
-        ai_available: true,
-        active_model: 'gemma2:2b',
+        database: 'unconfigured',
+        ai_available: false,
+        active_model: null,
       }),
     })
     vi.stubGlobal('fetch', mockFetch)
@@ -33,7 +33,9 @@ describe('App Component', () => {
     expect(screen.getByText('Insights & Reflection')).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(screen.getByText('Healthy')).toBeInTheDocument()
+      expect(screen.getAllByText(/healthy/i).length).toBeGreaterThanOrEqual(1)
+      expect(screen.getByText((content) => content.includes('unconfigured'))).toBeInTheDocument()
+      expect(screen.getByText((content) => content.includes('(M6)'))).toBeInTheDocument()
     })
   })
 
@@ -46,7 +48,7 @@ describe('App Component', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Waiting for backend')).toBeInTheDocument()
-      expect(screen.getByText('Backend not currently running on 127.0.0.1:24125')).toBeInTheDocument()
+      expect(screen.getByText(/Backend not currently running on 127\.0\.0\.1:24125/i)).toBeInTheDocument()
     })
   })
 })

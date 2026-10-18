@@ -16,9 +16,9 @@ class HealthResponse(BaseModel):
             "example": {
                 "status": "healthy",
                 "version": "0.1.0",
-                "database": "connected",
-                "ai_available": True,
-                "active_model": "gemma2:2b",
+                "database": "unconfigured",
+                "ai_available": False,
+                "active_model": None,
             }
         }
     )

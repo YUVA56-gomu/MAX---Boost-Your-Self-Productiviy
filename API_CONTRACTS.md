@@ -33,16 +33,19 @@
 Health probe called by Tauri desktop shell and UI during startup.
 
 - **Auth Required**: No
-- **Response `200 OK`**:
+- **Response `200 OK` (Default / Foundation State)**:
 ```json
 {
   "status": "healthy",
   "version": "0.1.0",
-  "database": "connected",
-  "ai_available": true,
-  "active_model": "gemma2:2b"
+  "database": "unconfigured",
+  "ai_available": false,
+  "active_model": null
 }
 ```
+*Note on Lifecycle States*:
+- `database`: Truthfully reports `"unconfigured"` until Milestone 2 SQLite connection pool is initialized. Once initialized and verified via `SELECT 1`, reports `"connected"`. Reports `"disconnected: <error>"` on connection failure.
+- `ai_available`: Truthfully reports `false` (and `active_model: null`) when AI is unconfigured/disabled (Milestone 1–5). Once enabled in Milestone 6, reports `true` and the detected model name only when verified via live Ollama runtime probe.
 
 ### 2.2 `POST /api/v1/system/shutdown`
 Gracefully flushes open SQLite WAL connections and exits the sidecar.

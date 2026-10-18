@@ -19,8 +19,14 @@ class Settings(BaseSettings):
         "tauri://localhost",
     ]
     
-    # Local SQLite database path
+    # Local SQLite database path - connection pool initialized in Milestone 2
     database_url: str = "sqlite:///./data/app.db"
+
+    # Local AI (Ollama) settings - full application service scheduled for Milestone 6
+    ai_enabled: bool = False
+    ollama_base_url: str = "http://127.0.0.1:11434"
+    ollama_model: str = "gemma2:2b"
+    ai_probe_timeout_seconds: float = 0.5
 
     model_config = SettingsConfigDict(
         env_prefix="APP_",

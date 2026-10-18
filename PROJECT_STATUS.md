@@ -1,6 +1,6 @@
 # Project Execution Status Dashboard
 
-**Last Updated**: `2026-10-18T13:58:00+05:30`  
+**Last Updated**: `2026-10-18T14:24:00+05:30`  
 **Overall Project Status**: `IN_REVIEW`  
 **Active Milestone**: `Milestone 1: Repository Foundation & Dual-Runtime Bootstrap`  
 **Active Task**: `Task 1.6: Milestone 1 Completion Verification & Handoff`
@@ -76,32 +76,35 @@
   - [x] Initialize Git repository (`git init`).
   - [x] Create comprehensive root [`.gitignore`](file:///d:/SelfProductivityApp/.gitignore) ignoring `node_modules/`, `.venv/`, `.db`, `dist/`, and cache directories.
   - [x] Commit foundation to Git (root commit `cd5e08c`).
-- [x] **Task 1.2: Frontend React + TypeScript + Vite Scaffolding** (`COMPLETED`)
+- [x] **Task 1.2: Frontend React + TypeScript + Vite Scaffolding & shadcn/ui Foundation** (`COMPLETED`)
   - [x] Scaffold `frontend/` using Vite with React 19.3.1 and TypeScript 6.0.3.
   - [x] Configure Tailwind CSS v4 (`@tailwindcss/vite 4.3.3`) with Gemini-dark tokens (`#0B0F17` base, frosted glass, sparkle accents).
+  - [x] Configure shadcn/ui foundation: created [`components.json`](file:///d:/SelfProductivityApp/frontend/components.json), [`src/lib/utils.ts`](file:///d:/SelfProductivityApp/frontend/src/lib/utils.ts) with `cn()`, and installed `class-variance-authority` and `@radix-ui/react-slot` in `dependencies`.
+  - [x] Author foundation shadcn/ui components: [`Button`](file:///d:/SelfProductivityApp/frontend/src/components/ui/button.tsx), [`Card`](file:///d:/SelfProductivityApp/frontend/src/components/ui/card.tsx), and [`Badge`](file:///d:/SelfProductivityApp/frontend/src/components/ui/badge.tsx).
   - [x] Configure path alias (`@/*` -> `./src/*`) and strict TypeScript settings.
-  - [x] Implement initial `App.tsx` foundation shell with health probe and 4 pillars cards.
-  - [x] Verify production build via `pnpm build` (passes in 559ms).
-  - [x] Verify linting via `pnpm lint` (oxlint: 0 errors, 0 warnings).
-- [x] **Task 1.3: Backend Python 3.14 + FastAPI Scaffolding** (`COMPLETED`)
+  - [x] Implement initial `App.tsx` foundation shell utilizing shadcn components and truthful health rendering.
+  - [x] Verify production build via `pnpm build` (`tsc -b && vite build` passes in 644ms).
+  - [x] Verify linting via `pnpm lint` (oxlint: 0 errors, 0 warnings across 9 files).
+- [x] **Task 1.3: Backend Python 3.14 + FastAPI Scaffolding & Truthful Health Reporting** (`COMPLETED`)
   - [x] Create virtual environment `backend/.venv` using CPython 3.14.0 with `uv venv`.
   - [x] Configure `backend/pyproject.toml` with FastAPI, uvicorn, pydantic v2, pydantic-settings, pytest, and httpx.
-  - [x] Install 26 packages cleanly with `uv pip install`.
   - [x] Implement `backend/app/main.py`, `backend/app/config.py`, and `backend/app/api/v1/health.py`.
+  - [x] Implement truthful health reporting: `database` truthfully reports `"unconfigured"` until Milestone 2 connection pool is established; `ai_available` truthfully reports `false` until Milestone 6 integration is enabled.
   - [x] Enforce loopback binding exclusively to `127.0.0.1` and port `24125`.
   - [x] Restrict CORS origins strictly to `http://localhost:5173`, `http://127.0.0.1:5173`, and `tauri://localhost`.
-  - [x] Verify live health probe returns HTTP 200 with `status: healthy`.
-- [x] **Task 1.4: Development Runner Configuration** (`COMPLETED`)
+  - [x] Verify live health probe returns HTTP 200 with truthful status values.
+- [x] **Task 1.4: Development Runner Configuration & Clean Shutdown** (`COMPLETED`)
   - [x] Create `scripts/run-backend.ps1` for standalone backend launching.
-  - [x] Create `scripts/dev.ps1` dual-runtime runner for concurrent frontend & backend execution.
+  - [x] Create `scripts/dev.ps1` dual-runtime runner with PID tracking, pre-flight port clearing, readiness polling, and `taskkill /F /T /PID` process tree termination.
+  - [x] Create `scripts/test-e2e.ps1` verifying live healthcheck, CORS preflight, untrusted origin rejection, and zero orphaned processes on shutdown.
   - [x] Configure root `package.json` scripts (`dev`, `build`, `test`, `test:backend`, `test:frontend`, `lint`).
 - [x] **Task 1.5: Automated Testing Verification** (`COMPLETED`)
   - [x] Configure Vitest with threads pool in `frontend/vite.config.ts`.
-  - [x] Write `frontend/src/App.test.tsx` verifying branding, 4 pillars cards, and health probe states.
-  - [x] Write `backend/tests/test_health.py` verifying health schema, allowed CORS origins, blocked external origins, and root endpoint.
-  - [x] Run unified test suite: 6 passed (4 backend in 0.39s + 2 frontend in 1.81s).
+  - [x] Write `frontend/src/App.test.tsx` verifying branding, 4 pillars cards, and truthful health probe states (2 tests passed).
+  - [x] Write `backend/tests/test_health.py` verifying health schema, unconfigured DB status, disabled AI status, Ollama live/error probes, allowed CORS origins, blocked external origins, and root endpoint (8 tests passed).
+  - [x] Run unified test suite: 10 passed (8 backend in 0.51s + 2 frontend in 1.89s).
 - [x] **Task 1.6: Milestone 1 Completion Verification & Handoff** (`COMPLETED`)
-  - [x] Update `TASK_LOG.md` with execution evidence.
+  - [x] Update `TASK_LOG.md` with execution evidence and discrepancy resolutions.
   - [x] Update `IMPLEMENTATION_PLAN.md` with task evidence.
   - [x] Update `PROJECT_STATUS.md` execution dashboard.
 
@@ -109,14 +112,15 @@
 
 ## 4. Verified Acceptance Criteria Checklist (Milestone 1)
 
-- [x] **Frontend Builds Cleanly**: `pnpm build` executes `tsc -b && vite build` with zero TypeScript or CSS errors (559ms).
-- [x] **Backend Returns HTTP 200**: Live uvicorn process responds to `GET /api/v1/health` with `status: healthy`, `version: 0.1.0`, `database: connected`, `ai_available: true`, `active_model: gemma2:2b`.
+- [x] **Frontend Builds Cleanly**: `pnpm build` executes `tsc -b && vite build` with zero TypeScript or CSS errors (644ms).
+- [x] **Truthful Health Reporting Verified**: Live uvicorn process responds to `GET /api/v1/health` with `status: healthy`, `version: 0.1.0`, `database: unconfigured` (no premature claim of connected database), `ai_available: false` (no premature claim of active AI).
+- [x] **shadcn/ui Foundation Operational**: `components.json`, `cn()` utility, `Button`, `Card`, and `Badge` components configured and rendered in application shell.
 - [x] **Loopback Binding Enforced**: Backend binds strictly to `127.0.0.1:24125`.
-- [x] **CORS Origin Restricted**: Tested via Pytest: allowed dev origins receive CORS approval; untrusted external origins are blocked.
-- [x] **Automated Tests Pass 100%**: 6 total tests (4 backend Pytest + 2 frontend Vitest) pass with zero failures.
-- [x] **Linter Passes 100%**: `pnpm lint` (oxlint) reports 0 errors and 0 warnings.
+- [x] **CORS Origin Restricted**: Tested live & via Pytest: allowed dev origin `http://localhost:5173` receives CORS approval; untrusted origin `http://malicious.com` is rejected.
+- [x] **Runner Shutdown Leaves Zero Orphans**: Verified with `scripts/test-e2e.ps1`: `taskkill /F /T /PID` terminates entire process tree; port 24125 verified 100% free with `Get-NetTCPConnection`.
+- [x] **Automated Tests Pass 100%**: 10 total tests (8 backend Pytest + 2 frontend Vitest) pass with zero failures.
+- [x] **Linter Passes 100%**: `pnpm lint` (oxlint) reports 0 errors and 0 warnings across 9 files.
 - [x] **Zero Persistent Token Storage**: No session tokens written to persistent browser storage.
-- [x] **Dual-Runtime Runner Provided**: `scripts/dev.ps1` and root `package.json` scripts operational.
 
 ---
 

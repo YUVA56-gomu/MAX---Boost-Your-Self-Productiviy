@@ -1,12 +1,86 @@
-def test_health_endpoint(client):
-    """Test that /api/v1/health returns healthy status and expected schema."""
+import pytest
+import httpx
+from backend.app.config import settings
+from backend.app.api.v1.health import check_database_status, check_ai_status
+
+
+def test_health_default_milestone_1_state(client):
+    """Test that /api/v1/health returns truthful status for Milestone 1:
+    - Status is healthy (server running)
+    - Version is 0.1.0
+    - Database is 'unconfigured' (SQLite connection pool scheduled for Milestone 2)
+    - AI is unavailable (Ollama integration scheduled for Milestone 6)
+    """
     response = client.get("/api/v1/health")
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "healthy"
     assert data["version"] == "0.1.0"
-    assert data["database"] == "connected"
-    assert isinstance(data["ai_available"], bool)
+    assert data["database"] == "unconfigured"
+    assert data["ai_available"] is False
+    assert data["active_model"] is None
+
+
+def test_database_status_truthful_when_uninitialized():
+    """Verify check_database_status() truthfully reports 'unconfigured' and never falsely claims 'connected'."""
+    status = check_database_status()
+    assert status == "unconfigured"
+    assert status != "connected"
+
+
+@pytest.mark.anyio
+async def test_ai_status_truthful_when_disabled():
+    """Verify check_ai_status() returns (False, None) when settings.ai_enabled is False."""
+    orig_enabled = settings.ai_enabled
+    try:
+        settings.ai_enabled = False
+        available, model = await check_ai_status()
+        assert available is False
+        assert model is None
+    finally:
+        settings.ai_enabled = orig_enabled
+
+
+@pytest.mark.anyio
+async def test_ai_status_when_enabled_and_ollama_reachable(monkeypatch):
+    """Verify check_ai_status() returns model when enabled and Ollama responds with models."""
+    orig_enabled = settings.ai_enabled
+    try:
+        settings.ai_enabled = True
+
+        async def mock_get(self, url, *args, **kwargs):
+            class MockResponse:
+                status_code = 200
+                def json(self):
+                    return {"models": [{"name": "gemma2:2b"}]}
+            return MockResponse()
+
+        monkeypatch.setattr(httpx.AsyncClient, "get", mock_get)
+
+        available, model = await check_ai_status()
+        assert available is True
+        assert model == "gemma2:2b"
+    finally:
+        settings.ai_enabled = orig_enabled
+
+
+@pytest.mark.anyio
+async def test_ai_status_when_enabled_and_ollama_unreachable(monkeypatch):
+    """Verify check_ai_status() returns (False, None) when Ollama connection fails."""
+    orig_enabled = settings.ai_enabled
+    try:
+        settings.ai_enabled = True
+
+        async def mock_get_error(self, url, *args, **kwargs):
+            raise httpx.ConnectError("Connection refused")
+
+        monkeypatch.setattr(httpx.AsyncClient, "get", mock_get_error)
+
+        available, model = await check_ai_status()
+        assert available is False
+        assert model is None
+    finally:
+        settings.ai_enabled = orig_enabled
 
 
 def test_cors_allowed_development_origin(client):

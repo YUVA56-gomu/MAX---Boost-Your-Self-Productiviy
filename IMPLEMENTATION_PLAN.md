@@ -71,25 +71,27 @@ gantt
 - **Prerequisites**: Approval of Milestone 0 (Satisfied on 2026-10-18).
 - **Ordered Implementation Tasks**:
   - [x] **Task 1.1**: Initialize Git repository (`git init`) and configure root [`.gitignore`](file:///d:/SelfProductivityApp/.gitignore) (ignoring node_modules, `.venv`, SQLite `.db`, cache files, and build artifacts).
-  - [x] **Task 1.2**: Scaffold frontend in `frontend/` using Vite with React 19.3.1, TypeScript 6.0.3 (`"strict": true`), Tailwind CSS v4, and Gemini-dark tokens from `DESIGN_SYSTEM.md`. Verify build via `pnpm build`.
-  - [x] **Task 1.3**: Scaffold backend in `backend/` using Python 3.14 with `uv venv`, `pyproject.toml`, FastAPI, Pydantic v2 schemas, and health probe endpoint (`GET /api/v1/health`).
-  - [x] **Task 1.4**: Configure local dual-runtime runner script (`scripts/dev.ps1` and root `package.json`) to launch both frontend and backend concurrently in browser development mode (`http://localhost:5173` + `http://127.0.0.1:24125`).
-  - [x] **Task 1.5**: Implement ephemeral in-memory session token harness and automated test suites (Pytest + Vitest).
-  - [x] **Task 1.6**: Author Milestone 1 completion verification report.
+  - [x] **Task 1.2**: Scaffold frontend in `frontend/` using Vite with React 19.3.1, TypeScript 6.0.3 (`"strict": true`), Tailwind CSS v4, and Gemini-dark tokens from `DESIGN_SYSTEM.md`. Configure shadcn/ui foundation (`components.json`, `cn()` utility, `Button`, `Card`, and `Badge` components) and verify production build.
+  - [x] **Task 1.3**: Scaffold backend in `backend/` using Python 3.14 with `uv venv`, `pyproject.toml`, FastAPI, Pydantic v2 schemas, and health probe endpoint (`GET /api/v1/health`) with truthful health reporting (database truthfully reports `"unconfigured"`; AI truthfully reports `false` until enabled).
+  - [x] **Task 1.4**: Configure local dual-runtime runner script (`scripts/dev.ps1` and root `package.json`) with PID tracking, pre-flight port clearing, readiness polling, and process-tree termination ensuring zero orphaned processes on shutdown.
+  - [x] **Task 1.5**: Implement ephemeral in-memory session token harness and automated test suites (Pytest + Vitest: 8 backend + 2 frontend = 10 passed).
+  - [x] **Task 1.6**: Author Milestone 1 completion verification report and resolve review discrepancies.
 - **Acceptance Criteria**:
-  - [x] Frontend builds cleanly without TypeScript or CSS errors (`pnpm build` passed in 559ms).
-  - [x] Backend launches and returns HTTP 200 on `GET /api/v1/health` (verified live).
+  - [x] Frontend builds cleanly without TypeScript or CSS errors (`pnpm build` passed in 644ms).
+  - [x] shadcn/ui foundation operational and rendered in application shell (`Button`, `Card`, `Badge`).
+  - [x] Backend launches and returns HTTP 200 on `GET /api/v1/health` with truthful statuses (`database: "unconfigured"`, `ai_available: false`).
   - [x] Backend binds strictly to `127.0.0.1:24125`; CORS restricted to `http://localhost:5173`.
-  - [x] Automated tests pass 100% (4 backend Pytest + 2 frontend Vitest).
-  - [x] Linter passes 100% (oxlint: 0 errors, 0 warnings).
+  - [x] Dual-runtime development runner shuts down cleanly leaving zero orphaned processes.
+  - [x] Automated tests pass 100% (8 backend Pytest + 2 frontend Vitest = 10 passed).
+  - [x] Linter passes 100% (oxlint: 0 errors, 0 warnings across 9 files).
   - [x] Zero persistent browser storage of session tokens.
 - **Required Verification Commands**:
-  - `pnpm build` (Pass - 559ms)
-  - `pnpm test` (Pass - 6 passed)
-  - `pnpm lint` (Pass - 0 errors, 0 warnings)
-  - `Invoke-RestMethod -Uri "http://127.0.0.1:24125/api/v1/health"` (Pass - 200 OK)
+  - `pnpm build` (Pass - 644ms)
+  - `pnpm test` (Pass - 10 passed: 8 backend in 0.51s, 2 frontend in 1.89s)
+  - `pnpm lint` (Pass - 0 errors, 0 warnings across 9 files)
+  - `powershell -ExecutionPolicy Bypass -File scripts/test-e2e.ps1` (Pass - live probe, CORS preflight, bad origin rejection, clean shutdown)
 - **Dependencies & Blockers**: None (browser dev mode active).
-- **Completion Evidence**: Git commit `cd5e08c`; terminal logs recorded in `TASK_LOG.md`; verified live probe response.
+- **Completion Evidence**: Git commits `cd5e08c`, `2baf5ac`; terminal logs recorded in `TASK_LOG.md`; verified live probe response.
 
 ---
 

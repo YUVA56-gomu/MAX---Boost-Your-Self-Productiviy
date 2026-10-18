@@ -150,4 +150,57 @@ All engineering activities, terminal executions, file modifications, and test ve
   - Zero persistent browser storage used for session state.
 - **Milestone 1 Gate Status**: Acceptance criteria verified. Transitioning Milestone 1 to **`IN_REVIEW`**. Awaiting user approval to unlock Milestone 2.
 
+---
+
+### Session 6: Milestone 1 Discrepancy Resolution & Foundation Hardening
+- **Date & Time**: `2026-10-18T14:23:00+05:30`
+- **Milestone & Task**: `Milestone 1: Repository Foundation & Dual-Runtime Bootstrap (Review Discrepancy Resolution)`
+- **User Action**: Milestone 1 review feedback received; identified 3 core discrepancies to resolve before approval:
+  1. Health reporting contained unverified / premature states (`database: connected`, `ai_available: true`, `active_model: gemma2:2b`).
+  2. Frontend lacked full shadcn/ui configuration (`components.json`, `lib/utils.ts`, core UI components), and runtime dependencies were incomplete.
+  3. Development runner lacked robust process-tree termination, risking orphaned background sidecar processes.
+- **Files Modified / Created**:
+  - [`backend/app/config.py`](file:///d:/SelfProductivityApp/backend/app/config.py): Added `ai_enabled` (default `False`), `ollama_base_url`, `ollama_model`, `ai_probe_timeout_seconds`.
+  - [`backend/app/schemas/health.py`](file:///d:/SelfProductivityApp/backend/app/schemas/health.py): Updated default examples with truthful values (`database: "unconfigured"`, `ai_available: false`, `active_model: null`).
+  - [`backend/app/api/v1/health.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/health.py): Refactored with lazy database connectivity check (returns `"unconfigured"` prior to M2) and conditional Ollama probe (returns `(False, None)` unless enabled).
+  - [`backend/tests/test_health.py`](file:///d:/SelfProductivityApp/backend/tests/test_health.py): Added 4 new tests verifying unconfigured DB status, disabled AI state, reachable Ollama probe, and unreachable Ollama error handling (total 8 Pytest tests).
+  - [`frontend/package.json`](file:///d:/SelfProductivityApp/frontend/package.json): Installed `class-variance-authority` and `@radix-ui/react-slot` into regular runtime `dependencies`.
+  - [`frontend/components.json`](file:///d:/SelfProductivityApp/frontend/components.json): Created standard shadcn/ui configuration targeting Tailwind v4 and path aliases.
+  - [`frontend/src/lib/utils.ts`](file:///d:/SelfProductivityApp/frontend/src/lib/utils.ts): Created standard `cn()` class merging utility.
+  - [`frontend/src/components/ui/button.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ui/button.tsx): Created foundation shadcn Button component.
+  - [`frontend/src/components/ui/card.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ui/card.tsx): Created foundation shadcn Card components.
+  - [`frontend/src/components/ui/badge.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ui/badge.tsx): Created foundation shadcn Badge component.
+  - [`frontend/src/index.css`](file:///d:/SelfProductivityApp/frontend/src/index.css): Added shadcn CSS variable theme mappings for Tailwind CSS v4.
+  - [`frontend/src/App.tsx`](file:///d:/SelfProductivityApp/frontend/src/App.tsx): Refactored to use shadcn Card, Badge, and Button components, added manual refresh, and truthful health status rendering.
+  - [`frontend/src/App.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/App.test.tsx): Updated to verify truthful health reporting and shadcn/ui components.
+  - [`scripts/dev.ps1`](file:///d:/SelfProductivityApp/scripts/dev.ps1): Overhauled with PID tracking, pre-flight port clearing, readiness polling, and `taskkill /F /T /PID` process tree termination.
+  - [`scripts/test-e2e.ps1`](file:///d:/SelfProductivityApp/scripts/test-e2e.ps1): Created automated end-to-end verification script for live health, CORS headers, and clean process shutdown.
+  - [`API_CONTRACTS.md`](file:///d:/SelfProductivityApp/API_CONTRACTS.md): Documented lifecycle states for `database` and `ai_available` in `/api/v1/health`.
+- **Commands & Tests Executed**:
+  1. `pnpm --dir frontend add class-variance-authority @radix-ui/react-slot` -> Exit 0. Packages added to `dependencies`.
+  2. `backend\.venv\Scripts\python.exe -m pytest backend/tests -v` -> Exit 0. All 8 tests passed in 0.51s.
+  3. `pnpm --dir frontend exec vitest run` -> Exit 0. 2 passed in 1.89s.
+  4. `pnpm lint` (oxlint) -> Exit 0. Found 0 warnings and 0 errors across 9 files.
+  5. `pnpm build` (`tsc -b && vite build`) -> Exit 0. Production bundle compiled cleanly in 644ms.
+  6. `powershell -ExecutionPolicy Bypass -File scripts/test-e2e.ps1` -> Exit 0:
+     - Live `GET /api/v1/health` responded HTTP 200 with truthful values: `database: "unconfigured"`, `ai_available: false`.
+     - Live CORS preflight from `http://localhost:5173` returned `access-control-allow-origin: http://localhost:5173`.
+     - Untrusted origin `http://malicious.com` rejected with HTTP 400 Bad Request.
+     - Process tree PID terminated cleanly; port 24125 verified 100% free with zero orphaned processes.
+  7. `pnpm test` -> Exit 0. Unified test suite executed 10 tests (8 backend + 2 frontend) with 100% pass rate.
+- **Errors Encountered & Resolutions**:
+  - *Error*: Top-level import `from sqlalchemy import text` in `health.py` threw `ModuleNotFoundError` during test collection because SQLAlchemy is not installed in Milestone 1.
+    *Resolution*: Replaced with lazy local import inside try/except block; truthfully returns `"unconfigured"` when SQLAlchemy is absent.
+  - *Error*: Oxlint flagged fast-refresh warning on exported variants in `button.tsx` and `badge.tsx`.
+    *Resolution*: Added standard `/* eslint-disable react-refresh/only-export-components */` at the top of the component files.
+  - *Error*: `tsc -b` failed with TS2613 because `main.tsx` imported `App` as default export while `App.tsx` only had named export.
+    *Resolution*: Added `export default App` to `App.tsx`.
+  - *Error*: PowerShell 5.1 `Invoke-WebRequest` without `-UseBasicParsing` attempted to initialize IE COM engine during CORS preflight test.
+    *Resolution*: Added `-UseBasicParsing` to all `Invoke-WebRequest` calls.
+- **Actual Results**:
+  - Truthful health reporting implemented and verified by tests and live execution.
+  - shadcn/ui fully configured with `components.json`, `cn()` utility, and foundation components (`Button`, `Card`, `Badge`).
+  - Runner process management verified to leave zero orphaned processes.
+- **Milestone 1 Gate Status**: Discrepancies resolved and verified. Milestone 1 remains **`IN_REVIEW`** awaiting user review.
+
 
