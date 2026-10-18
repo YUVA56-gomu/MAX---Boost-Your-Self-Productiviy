@@ -19,6 +19,8 @@ class Settings(BaseSettings):
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "tauri://localhost",
+        "http://tauri.localhost",
+        "https://tauri.localhost",
     ]
     
     # Local SQLite database path - connection pool initialized in Milestone 2

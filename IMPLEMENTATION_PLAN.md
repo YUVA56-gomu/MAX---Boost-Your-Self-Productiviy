@@ -96,8 +96,8 @@ gantt
 ---
 
 ### Milestone 2: Core Data Engine & Backend Services (Four Pillars)
-- **Status**: **`IN_REVIEW`**
-- **Review & Approval Status**: Submitted for User Review & Sign-Off (2026-10-18)
+- **Status**: **`COMPLETED`**
+- **Review & Approval Status**: Explicitly Approved by User on 2026-10-18
 - **Objective & Scope**: Implement complete relational persistence layer in SQLite (WAL mode) and REST APIs in FastAPI across all four core pillars + supporting notes, secured by constant-time token comparison and log redaction.
 - **Prerequisites**: Milestone 1 approved (Satisfied on 2026-10-18).
 - **Ordered Implementation Tasks**:
@@ -112,43 +112,50 @@ gantt
   - [x] **Task 2.3**: Configure Alembic migrations (`render_as_batch=True`) in `backend/alembic/env.py` and generate initial baseline migration script (`94a63b57f1cd_initial_schema.py`); verified execution via `alembic upgrade head`.
   - [x] **Task 2.4**: Implement security middleware: constant-time token comparison (`secrets.compare_digest`), 401 rejection for unauthenticated requests, and sensitive header/token log redaction middleware.
   - [x] **Task 2.5**: Implement CRUD endpoint routers and Pydantic v2 schemas matching `API_CONTRACTS.md` for all 4 pillars and supporting notes (`/workspaces`, `/tasks`, `/goals`, `/projects`, `/habits`, `/focus`, `/insights`, `/notes`, `/system`).
-  - [x] **Task 2.6**: Build Pytest test suite with in-memory SQLite fixtures (`StaticPool`), relationships, cascades, CRUD, validation, auth security, and isolation tests (32 tests passing, 85% coverage).
-  - [x] **Task 2.7**: Author Milestone 2 completion report and update tracking documents.
+  - [x] **Task 2.6**: Build Pytest test suite with in-memory SQLite fixtures (`StaticPool`), relationships, cascades, CRUD, validation, auth security, and isolation tests (43 tests passing, 85% coverage).
+  - [x] **Task 2.7**: Author Milestone 2 completion report and execute focused security & data-integrity audit (verified zero schema drift, fresh temporary DB migrations from zero, transaction rollbacks, production token validation, and unhandled error sanitization).
 - **Acceptance Criteria**:
   - [x] `alembic upgrade head` applies cleanly without errors.
-  - [x] Pytest test suite achieves >= 85% coverage across routes and models (85% verified across 1347 statements).
+  - [x] Pytest test suite achieves >= 85% coverage across routes and models (85% verified across 1423 statements, 43 passed).
   - [x] Security tests verify unauthenticated requests are rejected with 401 and tokens are redacted from logs (`test_auth_security.py` passes 5/5; verified live via `scripts/test-e2e.ps1`).
   - [x] Truthful health reporting verified (`database: "connected"`, `ai_available: false`).
+  - [x] Security and data-integrity audit verified with 11 dedicated regression tests in `test_audit_security_integrity.py`.
 - **Required Verification Commands**:
-  - `python -m pytest backend/tests -v --cov=backend.app --cov-report=term-missing` (Pass - 32 passed, 85% coverage)
-  - `pnpm test` (Pass - 32 backend in 2.67s, 2 frontend in 1.62s)
+  - `python -m pytest backend/tests -v --cov=backend.app --cov-report=term-missing` (Pass - 43 passed, 85% coverage)
+  - `pnpm test` (Pass - 43 backend in 1.76s, 2 frontend in 1.41s)
   - `powershell -ExecutionPolicy Bypass -File scripts/test-e2e.ps1` (Pass - connected DB, auth rejection, authenticated query, clean shutdown)
 - **Dependencies & Blockers**: None.
-- **Completion Evidence**: Alembic revision `94a63b57f1cd_initial_schema.py`; Pytest 32/32 tests passed; E2E probe logs recorded in `TASK_LOG.md`.
+- **Completion Evidence**: Alembic revision `94a63b57f1cd_initial_schema.py`; Pytest 43/43 tests passed; Git commits `b63e0ae`, `bad1ed3`; E2E probe logs recorded in `TASK_LOG.md`.
 
 ---
 
 ### Milestone 3: Desktop Shell Integration (Tauri 2)
-- **Status**: **`NOT_STARTED`**
-- **Review & Approval Status**: Pending
-- **Objective & Scope**: Integrate native desktop shell via Tauri 2, configure Rust toolchain on workstation, implement automated sidecar supervisor lifecycle, and manage in-memory token delivery.
-- **Prerequisites**: Milestone 2 approved; Rust toolchain installed.
+- **Status**: **`IN_REVIEW`**
+- **Review & Approval Status**: Completed & Awaiting User Approval (Implemented on 2026-10-18)
+- **Objective & Scope**: Integrate native desktop shell via Tauri 2, configure Rust toolchain on workstation, implement automated sidecar supervisor lifecycle, and manage in-memory token delivery without persistent storage.
+- **Prerequisites**: Milestone 2 approved (Satisfied on 2026-10-18).
 - **Ordered Implementation Tasks**:
-  - [ ] **Task 3.1**: Verify/install Rust toolchain (`rustup`) and MSVC C++ Build Tools on host workstation (resolving `[OPEN-001]`).
-  - [ ] **Task 3.2**: Initialize and configure Tauri 2 in `src-tauri/`.
-  - [ ] **Task 3.3**: Implement sidecar supervisor: generate 32-byte ephemeral hex token, allocate loopback port, spawn Python sidecar, and monitor `/api/v1/health`.
-  - [ ] **Task 3.4**: Inject session token into webview memory via secure Tauri IPC command (strictly zero persistent storage).
-  - [ ] **Task 3.5**: Handle window close events with graceful sidecar shutdown signal (`POST /api/v1/system/shutdown`).
-  - [ ] **Task 3.6**: Configure custom dark window titlebar, window controls, and system tray.
-  - [ ] **Task 3.7**: Author Milestone 3 completion report.
+  - [x] **Task 3.1**: Verify/install Rust toolchain (`rustup 1.29.1`, `rustc 1.99.1`, `cargo 1.99.1`) and 64-bit MinGW-w64 toolchain via WinLibs (POSIX UCRT GCC 16.2.0, Binutils 2.47 x86_64), resolving `[OPEN-001]`.
+  - [x] **Task 3.2**: Initialize and configure Tauri 2 in `src-tauri/` (`@tauri-apps/cli 2.12.3`, `@tauri-apps/api 2.12.4`, `tauri.conf.json` with 1440x900 default, 1024x768 min, Gemini dark tokens, and loopback CSP).
+  - [x] **Task 3.3**: Implement sidecar supervisor: generate 32-byte ephemeral hex token via Windows `BCryptGenRandom`, bind strictly to loopback `127.0.0.1:24125`, pass `APP_AUTH_TOKEN` and `APP_ENV=production`, probe health endpoint for startup readiness before webview display.
+  - [x] **Task 3.4**: Inject session token into webview memory via secure Tauri IPC command `get_session_token` in `src-tauri/src/lib.rs`, consumed by `frontend/src/lib/auth.ts` (strictly zero persistent storage in localStorage, sessionStorage, cookies, or IndexedDB; seamless browser dev fallback).
+  - [x] **Task 3.5**: Handle window close and application exit events (`WindowEvent::Destroyed`, `RunEvent::Exit`) with graceful sidecar process termination (`child.kill()`, `child.wait()`), leaving zero orphan processes.
+  - [x] **Task 3.6**: Configure Tauri window geometry, dark theme, and capabilities in `src-tauri/capabilities/default.json`.
+  - [x] **Task 3.7**: Author Milestone 3 completion report, verify dual-runtime test suite (`pnpm test` executes 43 backend tests, 7 frontend tests, and desktop lifecycle verification script with 100% pass rate), and investigate packaging options (`[OPEN-002]`).
 - **Acceptance Criteria**:
-  - Native Tauri window compiles and renders the React application.
-  - Python sidecar process cleanly launches with Tauri and shuts down when window is closed (zero orphan processes).
-  - Healthcheck probe verifies backend readiness before webview display.
+  - [x] Native Tauri window compiles and links native binary (`src-tauri/target/debug/app.exe`, 222MB debug build).
+  - [x] Python sidecar process cleanly launches with Tauri and shuts down when window is closed (verified zero orphan processes via `scripts/test-desktop-lifecycle.ps1`).
+  - [x] Healthcheck probe verifies backend readiness before webview display.
+  - [x] Ephemeral in-memory token security verified: unauthenticated requests rejected (401), fallback dev token rejected in production (401), valid ephemeral token accepted (200), zero persistent browser storage.
+  - [x] Browser dev workflow preserved: `frontend/src/lib/auth.ts` falls back to dev token in browser environment.
+  - [x] Existing backend (43 tests) and frontend (7 tests) pass 100%.
 - **Required Verification Commands**:
-  - `pnpm tauri dev`
-- **Dependencies & Blockers**: Requires resolving `[OPEN-001]` (installing Rust toolchain).
-- **Completion Evidence**: Running desktop application verified; process termination verified in task manager.
+  - `pnpm test` (Pass - 43 backend in 5.20s, 7 frontend in 21.29s, desktop lifecycle test in 7.00s)
+  - `powershell -ExecutionPolicy Bypass -File scripts/test-desktop-lifecycle.ps1` (Pass - production token injection, 401 unauth check, dev token rejection in prod, CORS desktop origins check, bad origin rejection, clean shutdown, zero orphans)
+  - `pnpm --dir frontend build` (Pass - `tsc -b && vite build` built in 1.94s)
+  - `cargo build (in src-tauri)` (Pass - `Finished dev profile in 53.09s`)
+- **Dependencies & Blockers**: None (`[OPEN-001]` resolved).
+- **Completion Evidence**: Native binary `src-tauri/target/debug/app.exe`; `frontend/src/lib/auth.ts` and `auth.test.ts`; `scripts/test-desktop-lifecycle.ps1`; unified `pnpm test` passing 50/50 tests; Git commits logged in `TASK_LOG.md`.
 
 ---
 

@@ -298,38 +298,59 @@ All engineering activities, terminal executions, file modifications, and test ve
 
 ---
 
-### Session 8: Milestone 2 Security and Data-Integrity Focused Audit
-- **Date & Time**: `2026-10-18T20:38:00+05:30`
-- **Milestone & Task**: `Milestone 2: Security & Data-Integrity Audit (IN_REVIEW)`
-- **User Action**: Mandated focused audit across Authentication/API Security, Workspace Isolation & Data Integrity, and Migration/Database Reliability before final Milestone 2 approval.
+### Session 9: Milestone 3 Desktop Shell Integration (Tauri 2)
+- **Date & Time**: `2026-10-18T21:35:00+05:30`
+- **Milestone & Task**: `Milestone 3: Desktop Shell Integration (Tauri 2)`
+- **User Action**: Explicitly approved Milestone 2 (Core Data Engine & Backend Services) and directed immediate incremental implementation of Milestone 3.
 - **Files Created**:
-  - [`backend/tests/test_audit_security_integrity.py`](file:///d:/SelfProductivityApp/backend/tests/test_audit_security_integrity.py): Comprehensive regression and audit test suite covering token environment validation, protected data leakage prevention, unhandled exception sanitation, workspace filtering isolation, cross-workspace relationship rejection, self-parenting loop prevention, cascade deletion, habit streak edge cases, focus session double-completion prevention, fresh temporary DB migrations from zero, and transaction rollbacks (11 dedicated tests).
+  - [`src-tauri/Cargo.toml`](file:///d:/SelfProductivityApp/src-tauri/Cargo.toml): Tauri 2 Rust package manifest (`crate-type = ["staticlib", "rlib"]`).
+  - [`src-tauri/tauri.conf.json`](file:///d:/SelfProductivityApp/src-tauri/tauri.conf.json): Tauri 2 desktop shell configuration (1440x900 window, min 1024x768, loopback CSP, Gemini dark styling).
+  - [`src-tauri/src/lib.rs`](file:///d:/SelfProductivityApp/src-tauri/src/lib.rs): Native desktop shell with Windows `BCryptGenRandom` 32-byte cryptographic ephemeral token generator, child process sidecar supervisor, IPC command `commands::get_session_token`, and zero-orphan cleanup on window close / exit.
+  - [`src-tauri/src/main.rs`](file:///d:/SelfProductivityApp/src-tauri/src/main.rs): Native desktop entry point.
+  - [`src-tauri/capabilities/default.json`](file:///d:/SelfProductivityApp/src-tauri/capabilities/default.json): Tauri core capabilities configuration.
+  - [`frontend/src/lib/auth.ts`](file:///d:/SelfProductivityApp/frontend/src/lib/auth.ts): In-memory ephemeral authentication client with Tauri IPC `get_session_token` and browser dev fallback (strictly zero persistent storage in localStorage, sessionStorage, cookies, or IndexedDB).
+  - [`frontend/src/lib/auth.test.ts`](file:///d:/SelfProductivityApp/frontend/src/lib/auth.test.ts): Unit tests for in-memory auth token lifecycle (5 tests passing).
+  - [`scripts/test-desktop-lifecycle.ps1`](file:///d:/SelfProductivityApp/scripts/test-desktop-lifecycle.ps1): Automated verification of sidecar startup, readiness probing, token security rejection (missing & dev token in prod), valid token acceptance, desktop CORS boundaries, and clean shutdown leaving zero orphan processes.
 - **Files Modified**:
-  - [`alembic.ini`](file:///d:/SelfProductivityApp/alembic.ini): Configured default `sqlalchemy.url = sqlite:///./data/app.db`.
-  - [`backend/alembic/env.py`](file:///d:/SelfProductivityApp/backend/alembic/env.py): Updated `run_migrations_online()` to respect custom `sqlalchemy.url` dynamically configured via Alembic Config (allowing programmatic migrations on temporary test databases).
-  - [`backend/app/config.py`](file:///d:/SelfProductivityApp/backend/app/config.py): Added `app_env` setting (`development`, `test`, `production`) and added Pydantic `@model_validator` strictly rejecting missing, empty, or fallback dev tokens in production mode (`APP_ENV=production`).
-  - [`backend/app/middleware/auth.py`](file:///d:/SelfProductivityApp/backend/app/middleware/auth.py): Restricted public documentation endpoints (`/docs`, `/redoc`, `/openapi.json`) to non-production environments only.
-  - [`backend/app/main.py`](file:///d:/SelfProductivityApp/backend/app/main.py): Disabled Swagger/OpenAPI docs in production mode; added global exception handler ensuring unexpected errors return clean `{"detail": "An internal server error occurred"}` without leaking internal traces or SQL schemas.
-  - [`backend/app/api/v1/tasks.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/tasks.py): Added relationship validations: rejecting non-existent workspaces, cross-workspace subtask/project/goal assignments, and self-parenting loops with HTTP 400.
-  - [`backend/app/api/v1/habits.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/habits.py): Handled edge case where unchecking all completed logs properly resets `current_streak` to 0.
-  - [`backend/app/api/v1/focus.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/focus.py): Prevented double-completion of focus sessions with HTTP 400 to prevent duplicated task minute rollovers.
-  - [`backend/tests/conftest.py`](file:///d:/SelfProductivityApp/backend/tests/conftest.py): Added `raise_server_exceptions=False` to TestClient fixture to enable inspecting 500 responses without client crash.
-  - [`PROJECT_STATUS.md`](file:///d:/SelfProductivityApp/PROJECT_STATUS.md): Updated with audited criteria and test verification evidence.
+  - [`.gitignore`](file:///d:/SelfProductivityApp/.gitignore): Added `scratch/` directory.
+  - [`backend/app/config.py`](file:///d:/SelfProductivityApp/backend/app/config.py): Added `http://tauri.localhost` and `https://tauri.localhost` to `cors_origins`.
+  - [`frontend/package.json`](file:///d:/SelfProductivityApp/frontend/package.json): Added `@tauri-apps/api 2.12.4`.
+  - [`frontend/src/App.tsx`](file:///d:/SelfProductivityApp/frontend/src/App.tsx): Integrated `apiFetch` for authenticated health probing.
+  - [`package.json`](file:///d:/SelfProductivityApp/package.json): Added `@tauri-apps/cli 2.12.3`, `test:desktop`, and updated unified `test` runner.
+  - [`DECISIONS.md`](file:///d:/SelfProductivityApp/DECISIONS.md): Updated `[OPEN-001]` as RESOLVED (Rust toolchain) and `[OPEN-002]` as INVESTIGATED / DEFERRED TO MILESTONE 7.
+  - [`IMPLEMENTATION_PLAN.md`](file:///d:/SelfProductivityApp/IMPLEMENTATION_PLAN.md): Transitioned Milestone 2 to `COMPLETED` and Milestone 3 to `IN_REVIEW`.
+  - [`PROJECT_STATUS.md`](file:///d:/SelfProductivityApp/PROJECT_STATUS.md): Updated dashboard and matrix with Milestone 3 verification criteria.
 - **Commands & Tests Executed**:
-  1. `backend\.venv\Scripts\alembic.exe check` -> Exit 0. Verified zero schema drift between current SQLAlchemy models and migration history.
-  2. `backend\.venv\Scripts\python.exe -m pytest backend/tests/test_audit_security_integrity.py -v` -> Exit 0. All 11 audit tests passed in 0.65s.
-  3. `backend\.venv\Scripts\python.exe -m pytest backend/tests --cov=backend.app --cov-report=term-missing` -> Exit 0. All 43 backend tests passed in 2.46s (85% coverage across 1423 statements).
-  4. `pnpm --filter frontend test` -> Exit 0. All 2 frontend tests passed in 97ms.
-  5. `pnpm --filter frontend run lint` -> Exit 0. 0 errors, 0 warnings across 9 files in 64ms.
-  6. `pnpm --filter frontend build` -> Exit 0. Production bundle compiled cleanly in 503ms (`tsc -b && vite build`).
-  7. `powershell -ExecutionPolicy Bypass -File scripts/test-e2e.ps1` -> Exit 0. Live probe passed: truthful healthcheck, 401 unauthenticated rejection, 200 authenticated workspace query, CORS preflight and untrusted origin rejection, clean shutdown with 0 orphaned processes.
-  8. `pnpm test` -> Exit 0. Unified test suite executed 45 tests (43 backend + 2 frontend) with 100% pass rate.
+  1. `rustup-init.exe` -> Exit 0. Installed `rustup 1.29.1` with `rustc 1.99.1 (58cf8f9c3 2026-10-13)` and `cargo 1.99.1 (5f94df478 2026-08-27)` (`stable-x86_64-pc-windows-gnu`).
+  2. `winget install BrechtSanders.WinLibs.POSIX.UCRT` -> Exit 0. Installed 64-bit MinGW-w64 (GCC 16.2.0, Binutils 2.47 UCRT x86_64).
+  3. User PATH configuration: Reprioritized WinLibs 64-bit binutils ahead of legacy 32-bit MinGW, resolving `dlltool: Invalid bfd target` and `CreateProcess` errors.
+  4. `cargo check` (in `src-tauri`) -> Exit 0 in 1.13s.
+  5. `cargo build` (in `src-tauri`) -> Exit 0 in 53.09s (`src-tauri/target/debug/app.exe`, 222MB debug build).
+  6. `pnpm --dir frontend test` -> Exit 0. All 7 frontend Vitest tests passed in 1.75s (`src/lib/auth.test.ts` 5/5, `src/App.test.tsx` 2/2).
+  7. `pnpm --dir frontend build` -> Exit 0 in 1.94s (`tsc -b && vite build` generated `dist/`).
+  8. `powershell -ExecutionPolicy Bypass -File scripts/test-desktop-lifecycle.ps1` -> Exit 0:
+     - FastAPI sidecar launched with injected production token.
+     - Readiness verified (`status: healthy, database: connected`).
+     - Unauthenticated access rejected with HTTP 401 Unauthorized.
+     - Dev fallback token in production mode rejected with HTTP 401 Unauthorized.
+     - Valid ephemeral token accepted with HTTP 200 OK.
+     - Desktop boundaries and CORS origins allowed: `http://localhost:5173`, `http://tauri.localhost`, `https://tauri.localhost`, `tauri://localhost`.
+     - Untrusted origin rejected with HTTP 400 Disallowed CORS origin.
+     - Clean shutdown: process tree terminated; port 24125 verified free with zero orphan processes.
+  9. `pnpm test` -> Exit 0: Unified test suite executed 43 backend Pytest tests + 7 frontend Vitest tests + desktop lifecycle test with 100% pass rate.
+- **Errors Encountered & Resolutions**:
+  - *Error*: Initial `cargo check` failed with `dlltool.exe: Can't create .lib file ... Invalid bfd target`.
+    *Resolution*: Discovered legacy 32-bit `C:\MinGW\bin\dlltool.exe` (Binutils 2.28 from 2017) in user PATH was shadowing 64-bit tools. Installed WinLibs MinGW-w64 (GCC 16.2.0, Binutils 2.47) and reprioritized 64-bit binutils in User PATH.
+  - *Error*: Initial `cargo build` failed with `ld.exe: error: export ordinal too large: 93104`.
+    *Resolution*: Discovered default `crate-type = ["staticlib", "cdylib", "rlib"]` attempted to export all symbols into a Windows DLL, exceeding the PE 16-bit 65,535 export ordinal limit. Changed `crate-type = ["staticlib", "rlib"]` in `src-tauri/Cargo.toml` since desktop binaries link via `rlib` into `app.exe`.
 - **Actual Results**:
-  - Production token separation strictly enforced; default/dev token rejected in production.
-  - Safe error handling prevents stack trace or database path leaks.
-  - Workspace boundaries and relationship integrity fully verified by tests.
-  - Migration from zero on fresh database and transaction rollbacks fully verified.
-- **Milestone 2 Gate Status**: Audit completed and verified. Milestone 2 remains strictly **`IN_REVIEW`**. Awaiting human gatekeeper approval before proceeding to Milestone 3.
+  - Rust toolchain fully verified and operational.
+  - Tauri 2 desktop shell fully configured and compiled.
+  - Automated desktop-to-FastAPI supervisor with startup readiness probing and zero-orphan cleanup operational.
+  - Ephemeral in-memory token security model enforced with zero persistent storage.
+  - 100% test pass rate across backend, frontend, and desktop lifecycle verification.
+- **Milestone 3 Gate Status**: All acceptance criteria verified. Transitioning Milestone 3 to **`IN_REVIEW`**. Awaiting human gatekeeper approval before beginning Milestone 4.
+
 
 
 

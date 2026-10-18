@@ -10,7 +10,12 @@
     "build": "pnpm --dir frontend build",
     "test:frontend": "pnpm --dir frontend exec vitest run",
     "test:backend": "backend\\.venv\\Scripts\\python.exe -m pytest backend/tests -v",
-    "test": "pnpm test:backend && pnpm test:frontend",
+    "test:desktop": "powershell -ExecutionPolicy Bypass -File ./scripts/test-desktop-lifecycle.ps1",
+    "test": "pnpm test:backend && pnpm test:frontend && pnpm test:desktop",
+    "tauri": "tauri",
     "lint": "pnpm --dir frontend run lint"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.12.3"
   }
 }

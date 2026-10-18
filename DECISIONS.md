@@ -97,16 +97,24 @@ Per project governance, every decision is explicit. **Any unresolved or intentio
 ## 3. Catalog of Deferred & Open Decisions
 
 ### [OPEN-001]: Rust Toolchain Setup for Tauri 2 Development
-- **Status**: **DEFERRED TO MILESTONE 3**
-- **Context**: `rustc` and `cargo` are not currently in the system PATH.
-- **Decision**: Defer Rust installation until Milestone 3 (Desktop Shell Integration). Milestones 1 and 2 will execute in browser development mode (`http://localhost:5173` + `http://127.0.0.1:24125`).
+- **Status**: **RESOLVED / ACCEPTED (2026-10-18)**
+- **Audit Findings**:
+  - `rustup 1.29.1` installed with `rustc 1.99.1 (58cf8f9c3 2026-10-13)` and `cargo 1.99.1 (5f94df478 2026-08-27)`.
+  - Toolchain: `stable-x86_64-pc-windows-gnu` linked with WinLibs MinGW-w64 (GCC 16.2.0, Binutils 2.47 UCRT x86_64).
+  - Resolved legacy 32-bit `C:\MinGW\bin\dlltool.exe` collision by prioritizing 64-bit WinLibs binutils ahead of legacy paths in user environment.
+  - Successfully compiled Tauri 2 native desktop binary (`src-tauri/target/debug/app.exe`) with exit code 0.
+- **Decision**: Standardize on `stable-x86_64-pc-windows-gnu` with WinLibs MinGW-w64 for Windows desktop development.
 
 ---
 
 ### [OPEN-002]: Sidecar Distribution Packaging Strategy
-- **Status**: **DEFERRED TO MILESTONE 3 / 7**
-- **Context**: Packaging the Python sidecar for users without Python installed.
-- **Options**: PyInstaller standalone executable vs. embedded Python runtime (`python-embed-amd64`). Both verified compatible with Python 3.14.
+- **Status**: **INVESTIGATED / DEFERRED TO MILESTONE 7**
+- **Context**: Packaging the FastAPI Python sidecar for distribution to end users who do not have Python 3.14 installed.
+- **Investigation & Findings**:
+  - **Option A (PyInstaller)**: Standalone binary `fastapi-backend.exe` generated via PyInstaller 6.22.3 (verified compatible with Python 3.14). Configured as Tauri external sidecar (`"bundle": { "externalBin": ["binaries/fastapi-backend"] }`).
+  - **Option B (Embedded Python)**: Bundling `python-3.14.0-embed-amd64.zip` into Tauri `resources/`, launching via internal path.
+  - **Milestone 3 Implementation**: Desktop shell supervisor uses `backend/.venv/Scripts/python.exe` dynamically with full health probing, ephemeral production token passing, and orphan process cleanup.
+  - **Truthful Status**: No production installer is claimed as ready until complete end-to-end bundling and installer testing is executed in Milestone 7.
 
 ---
 

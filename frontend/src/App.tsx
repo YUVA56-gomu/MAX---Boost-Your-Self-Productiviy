@@ -3,6 +3,7 @@ import { CheckCircle2, ShieldCheck, Activity, Terminal, ArrowRight, RefreshCw } 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { apiFetch } from '@/lib/auth'
 
 interface HealthStatus {
   status: string
@@ -22,7 +23,7 @@ export function App() {
       setLoading(true)
     }
     try {
-      const response = await fetch('http://127.0.0.1:24125/api/v1/health')
+      const response = await apiFetch('http://127.0.0.1:24125/api/v1/health')
       if (!response.ok) {
         throw new Error(`Health probe returned HTTP ${response.status}`)
       }
@@ -42,7 +43,7 @@ export function App() {
     let isMounted = true
     const probe = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:24125/api/v1/health')
+        const response = await apiFetch('http://127.0.0.1:24125/api/v1/health')
         if (!response.ok) {
           throw new Error(`Health probe returned HTTP ${response.status}`)
         }

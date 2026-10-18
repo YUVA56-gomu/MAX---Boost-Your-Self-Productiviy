@@ -1,10 +1,10 @@
 # Project Execution Status Dashboard
 
-**Last Updated**: `2026-10-18T20:21:00+05:30`  
+**Last Updated**: `2026-10-18T21:35:00+05:30`  
 **Overall Project Status**: `IN_PROGRESS`  
-**Active Milestone**: `Milestone 2: Core Data Engine & Backend Services (Four Pillars)`  
-**Active Milestone Status**: **`IN_REVIEW`** (Submitted for Human Gatekeeper Approval)  
-**Active Task**: `Task 2.7: Milestone 2 Completion Report & Verification Sign-Off` (`COMPLETED`)
+**Active Milestone**: `Milestone 3: Desktop Shell Integration (Tauri 2)`  
+**Active Milestone Status**: **`IN_REVIEW`** (Completed & Awaiting User Approval)  
+**Active Task**: `Milestone 3 Complete & Verified` (`IN_REVIEW`)
 
 ---
 
@@ -14,9 +14,9 @@
 | :--- | :--- | :--- | :--- |
 | **Milestone 0** | **Project Governance & Workspace Preparation** | **`COMPLETED`** | **Explicitly Approved by User on 2026-10-18** |
 | **Milestone 1** | **Repository Foundation & Dual-Runtime Bootstrap** | **`COMPLETED`** | **Explicitly Approved by User on 2026-10-18** |
-| **Milestone 2** | **Core Data Engine & Backend Services (Four Pillars)**| **`IN_REVIEW`** | **Pending User Review & Approval** |
-| **Milestone 3** | **Desktop Shell Integration (Tauri 2)** | `NOT_STARTED` | Locked pending Milestone 2 approval |
-| **Milestone 4** | **Gemini-Dark UI - Execution & Goals Canvas** | `NOT_STARTED` | Locked pending Milestone 3 completion |
+| **Milestone 2** | **Core Data Engine & Backend Services (Four Pillars)**| **`COMPLETED`** | **Explicitly Approved by User on 2026-10-18** |
+| **Milestone 3** | **Desktop Shell Integration (Tauri 2)** | **`IN_REVIEW`** | **Completed & Awaiting User Approval** |
+| **Milestone 4** | **Gemini-Dark UI - Execution & Goals Canvas** | `NOT_STARTED` | Locked pending Milestone 3 approval |
 | **Milestone 5** | **Habits, Focus Engine & Insights Dashboard** | `NOT_STARTED` | Locked pending Milestone 4 completion |
 | **Milestone 6** | **Optional Local AI (Ollama + Gemma 2 2B)** | `NOT_STARTED` | Locked pending Milestone 5 completion |
 | **Milestone 7** | **Hardening, Packaging & Release Readiness** | `NOT_STARTED` | Locked pending Milestone 6 completion |
@@ -125,7 +125,7 @@
 
 ---
 
-## 5. Milestone 2 Task Breakdown & Verified Acceptance (`IN_REVIEW`)
+## 5. Milestone 2 Task Breakdown & Verified Acceptance (`COMPLETED`)
 
 ### Tasks & Subtasks
 - [x] **Task 2.1: SQLite Connection Management & Lifespan Session Pool** (`COMPLETED`)
@@ -177,16 +177,76 @@
 
 ---
 
-## 7. Outstanding Bugs, Blockers & Known Limitations
+## 7. Milestone 3 Task Breakdown & Verified Acceptance (`IN_REVIEW`)
+
+### Tasks & Subtasks
+- [x] **Task 3.1: Rust Toolchain Verification & Setup** (`COMPLETED`)
+  - [x] Install and configure Rust toolchain via rustup (`rustc 1.99.1`, `cargo 1.99.1`, target `stable-x86_64-pc-windows-gnu`).
+  - [x] Install WinLibs MinGW-w64 (GCC 16.2.0, GNU Binutils 2.47 UCRT x86_64).
+  - [x] Resolve legacy 32-bit `C:\MinGW\bin\dlltool.exe` shadowing by reprioritizing 64-bit binutils in user PATH.
+  - [x] Resolve `[OPEN-001]` in `DECISIONS.md`.
+- [x] **Task 3.2: Tauri 2 Scaffolding & Configuration** (`COMPLETED`)
+  - [x] Install `@tauri-apps/api 2.12.4` and `@tauri-apps/cli 2.12.3`.
+  - [x] Configure `src-tauri/tauri.conf.json`: window dimensions `1440x900` default, `1024x768` min, dark theme `#0B0F17`, loopback CSP.
+  - [x] Configure `src-tauri/Cargo.toml` with `crate-type = ["staticlib", "rlib"]` (avoiding PE 16-bit 65535 export ordinal overflow).
+- [x] **Task 3.3: Native Sidecar Supervisor & Readiness Probing** (`COMPLETED`)
+  - [x] Author `src-tauri/src/lib.rs` with Windows `BCryptGenRandom` 32-byte cryptographic hex token generation.
+  - [x] Launch Python backend sidecar child process with `APP_AUTH_TOKEN`, `APP_ENV=production`, `APP_HOST=127.0.0.1`, `APP_PORT=24125`.
+  - [x] Implement polling health readiness probe (`/api/v1/health`) before webview rendering.
+- [x] **Task 3.4: Ephemeral In-Memory Authentication Token Delivery** (`COMPLETED`)
+  - [x] Implement Tauri command `commands::get_session_token` in `src-tauri/src/lib.rs`.
+  - [x] Implement `frontend/src/lib/auth.ts` calling `invoke('get_session_token')` with seamless browser dev fallback.
+  - [x] Guarantee strictly in-memory storage (verified zero persistence in `localStorage`, `sessionStorage`, `cookies`, or `IndexedDB`).
+  - [x] Author unit tests in `frontend/src/lib/auth.test.ts` (5 tests passing).
+- [x] **Task 3.5: Clean Shutdown & Orphan Cleanup** (`COMPLETED`)
+  - [x] Handle `WindowEvent::Destroyed` and `RunEvent::Exit` in Rust to terminate child backend process (`child.kill()`, `child.wait()`).
+  - [x] Author comprehensive lifecycle verification script `scripts/test-desktop-lifecycle.ps1` verifying clean shutdown and zero orphan processes on port 24125.
+- [x] **Task 3.6: Boundary Restriction & Packaging Evaluation** (`COMPLETED`)
+  - [x] Verify loopback isolation and CORS restriction to desktop/local web origins.
+  - [x] Verify production mode strictly rejects dev fallback token.
+  - [x] Investigate and document packaging options in `DECISIONS.md` (`[OPEN-002]`: PyInstaller vs. embedded Python).
+- [x] **Task 3.7: Dual-Runtime Testing & Verification** (`COMPLETED`)
+  - [x] Compile native desktop binary (`src-tauri/target/debug/app.exe`, 222MB debug build).
+  - [x] Build frontend production assets (`dist/` built in 1.94s).
+  - [x] Execute unified `pnpm test` (43 backend Pytest tests, 7 frontend Vitest tests, and desktop lifecycle verification script passing 100%).
+
+---
+
+## 8. Verified Acceptance Criteria Checklist (Milestone 3)
+
+- [x] **Rust Toolchain Operational**: `rustc 1.99.1` and `cargo 1.99.1` running with 64-bit MinGW-w64 (GCC 16.2.0, Binutils 2.47).
+- [x] **Tauri 2 Native Binary Compiles**: `src-tauri/target/debug/app.exe` compiled and linked cleanly with exit code 0 (`Finished dev profile in 53.09s`).
+- [x] **Frontend Builds Cleanly**: `tsc -b && vite build` generates `frontend/dist/` in 1.94s.
+- [x] **Desktop-to-FastAPI Lifecycle Verified**: Automated verification in `scripts/test-desktop-lifecycle.ps1` confirms sidecar startup, loopback binding (`127.0.0.1:24125`), readiness probing, and clean shutdown.
+- [x] **Zero Orphan Processes on Shutdown**: `taskkill /F /T /PID` terminates backend process tree; port 24125 verified free (`Get-NetTCPConnection` returns zero open connections).
+- [x] **Ephemeral In-Memory Token Security Verified**:
+  - Windows `BCryptGenRandom` generates 32 cryptographically random bytes (64 hex characters) on boot.
+  - Token delivered directly to webview memory via IPC command `commands::get_session_token`.
+  - Zero persistent browser storage: verified `localStorage`, `sessionStorage`, and `cookies` contain zero secrets.
+  - Production mode strictly rejects missing tokens and dev fallback tokens with HTTP 401 Unauthorized.
+  - Valid ephemeral production token accepted with HTTP 200 OK.
+- [x] **Local Application Boundary Enforced**: CORS preflight strictly restricted to `http://localhost:5173`, `http://tauri.localhost`, `https://tauri.localhost`, and `tauri://localhost`. Untrusted origins (e.g. `http://malicious-cloud-tracker.com`) rejected with HTTP 400 Disallowed CORS origin.
+- [x] **Browser Development Workflow Preserved**: Frontend client seamlessly falls back to local dev token when running in a standard web browser outside Tauri (`__TAURI_INTERNALS__` undefined).
+- [x] **All Existing Tests Remain 100% Green**:
+  - Backend Pytest: 43 passed (0 failed).
+  - Frontend Vitest: 7 passed (0 failed).
+  - Desktop Lifecycle: PASSED (0 failed).
+  - Unified `pnpm test`: 100% green.
+- [x] **Truthful Packaging Status Documented**: PyInstaller vs. embedded Python investigated and logged in `DECISIONS.md` (`[OPEN-002]`); no false claims of production installer until Milestone 7.
+
+---
+
+## 9. Outstanding Bugs, Blockers & Known Limitations
 
 | Item ID | Classification | Description | Impact | Target Milestone |
 | :--- | :--- | :--- | :--- | :--- |
-| **`[OPEN-001]`** | Toolchain Limitation | `rustc` and `cargo` not installed in PATH on Windows host. | Tauri native wrapper cannot compile yet; browser dev mode active for M1–M2. | Milestone 3 |
+| **`[OPEN-001]`** | Toolchain (Resolved) | `rustc 1.99.1`, `cargo 1.99.1`, WinLibs MinGW-w64 GCC 16.2.0 installed and verified. | Resolved on 2026-10-18. | Milestone 3 (RESOLVED) |
+| **`[OPEN-002]`** | Packaging (Investigated) | Evaluated PyInstaller vs. embedded Python runtime for distribution. | Standalone installer creation deferred to Milestone 7. | Milestone 7 |
 | **`[OPEN-004]`** | Asset Blocker | `dashboard-reference.png` physical image file not yet placed in `docs/design-reference/`. | Image inspection automated checks cannot run until user manually places file. | User Action / Milestone 4 |
 
 ---
 
-## 8. Architectural Decision Status Summary
+## 10. Architectural Decision Status Summary
 
 - **ADR-001 (Accepted)**: Local-first architecture with SQLite WAL mode.
 - **ADR-002 (Accepted)**: Tauri 2 desktop shell.
@@ -198,8 +258,8 @@
 - **ADR-008 (Accepted)**: Testing stack: Pytest + Vitest + dedicated security test suite.
 - **ADR-009 (Accepted)**: Entity identification using UUIDv4 strings.
 - **ADR-010 (Accepted)**: SQLite Migration Strategy (Alembic Batch Mode) & Test Isolation (StaticPool).
-- **`[OPEN-001]`**: Rust toolchain installation — **`DEFERRED TO MILESTONE 3`**.
-- **`[OPEN-002]`**: Production Python packaging strategy — **`DEFERRED TO MILESTONE 3 / 7`**.
+- **`[OPEN-001]`**: Rust toolchain installation — **`RESOLVED (ACCEPTED)`**.
+- **`[OPEN-002]`**: Production Python packaging strategy — **`INVESTIGATED / DEFERRED TO MILESTONE 7`**.
 - **`[OPEN-003]`**: Rich markdown editor component selection — **`DEFERRED TO MILESTONE 4`**.
 - **`[OPEN-004]`**: Visual design reference placement (`dashboard-reference.png`) — **`UNRESOLVED (OPEN)`**.
 - **`[OPEN-005]`**: Multi-device cross-network synchronization — **`DEFERRED TO POST-MVP`**.
@@ -207,9 +267,10 @@
 
 ---
 
-## 9. Exact Next Recommended Action
+## 11. Exact Next Recommended Action
 
-1. **User Action**: Review the Milestone 2 completion verification report and provide explicit approval to mark Milestone 2 as `COMPLETED`.
-2. **Immediate Subsequent Milestone**: Upon user approval, begin **Milestone 3: Desktop Shell Integration (Tauri 2)** (Task 3.1: Rust toolchain setup & Tauri 2 sidecar lifecycle integration).
+1. **User Action**: Review the Milestone 3 completion verification report and provide explicit approval to mark Milestone 3 as `COMPLETED`.
+2. **Immediate Subsequent Milestone**: Upon user approval, begin **Milestone 4: Gemini-Dark UI - Execution & Goals Canvas** (App shell layout, Kanban board, Goals canvas, and supporting notes editor).
+
 
 
