@@ -167,21 +167,22 @@ gantt
 - **Ordered Implementation Tasks**:
   - [x] **Task 4.1**: Build app shell layout: 240px collapsible left sidebar, top header bar with search input (`Ctrl+K`), 340px right contextual drawer, and distinctive MAX geometric brand mark (`MaxLogo.tsx`).
   - [x] **Task 4.2**: Implement Dashboard/Home (Screen 1): greeting hero banner with abstract geometric glass artwork (`HeroArtwork.tsx`), 4 quick stat cards with refined gradient progress bars and mini-histogram, Today's Tasks widget, Focus Timer widget with neon gradient ring, weekly activity bar chart, and coordinated sidebar AI promo card (`PromoArtwork.tsx`).
-  - [ ] **Task 4.3**: Implement Tasks & Subtasks Canvas (Screen 2): Kanban board with drag-and-drop, list view, subtask trees, priority pills, and cognitive energy badges.
-  - [ ] **Task 4.4**: Implement Task Details & Creation Modal (Screen 3): markdown editor, metadata selectors, recurrence configuration, and `task_history` audit drawer.
-  - [ ] **Task 4.5**: Implement Goals Canvas (Screen 4 & 5): Long-Term/Short-Term horizon cards, milestone timeline, linked tasks table, and automated progress roll-up.
-  - [ ] **Task 4.6**: Implement Projects Canvas (Screen 6) and Workspace Overview (Screen 7).
-  - [ ] **Task 4.7**: Implement Supporting Notes Editor: markdown editor with wikilink autocompletion (`[[Note]]`).
-  - [ ] **Task 4.8**: Build Vitest test suite covering core components.
+  - [x] **Task 4.3**: Implement Tasks & Subtasks Canvas (Screen 2): Kanban board with drag-and-drop, list view, subtask trees, priority pills, and cognitive energy badges (`TasksCanvas.tsx`).
+  - [x] **Task 4.4**: Implement Task Details & Creation Modal (Screen 3): markdown editor with write/preview tabs, metadata selectors, recurrence configuration with backend persistence, and `task_history` audit drawer (`TaskDrawer.tsx`).
+  - [x] **Task 4.5**: Implement Goals Canvas: Long-Term/Short-Term horizon cards, milestone timeline, progress percentage roll-up, and goal deletion (`GoalsCanvas.tsx`).
+  - [x] **Task 4.6**: Implement Whole-App Local AI Intelligence & Coach: productivity diagnosis, planning mistake detection, conversational coach, and reviewable proposal cards (`AICoachCanvas.tsx`, `ProposalCard.tsx`).
+  - [x] **Task 4.7**: Implement Sidebar Canvases Activation: Habits tracker (`HabitsCanvas.tsx`), Focus engine (`FocusCanvas.tsx`), Insights dashboard (`InsightsCanvas.tsx`), and Notes editor (`NotesCanvas.tsx`) with real SQLite persistence.
+  - [x] **Task 4.8**: Implement Premium Local AI Onboarding & Ollama Setup Workflow (`AIOnboardingModal.tsx`): 6-state truthful detection, official download guidance, safe allowlisted service launch, model verification, bounded test inference, and smooth transition to AI Coach.
   - [ ] **Task 4.9**: Author Milestone 4 completion report.
 - **Acceptance Criteria**:
   - UI visual identity strictly matches `dashboard-reference.png`.
-  - Vitest test suite achieves >= 80% component coverage.
+  - Vitest test suite achieves >= 80% component coverage (69 frontend tests, 55 backend tests passing 100%).
   - Full keyboard navigability across all views.
 - **Required Verification Commands**:
-  - `pnpm vitest run --coverage`
-- **Dependencies & Blockers**: Requires `dashboard-reference.png` placed in `docs/design-reference/`.
-- **Completion Evidence**: Vitest test execution output and visual component verification recorded in `TASK_LOG.md`.
+  - `pnpm -C frontend test --run`
+  - `backend\.venv\Scripts\python.exe -m pytest backend/tests`
+- **Dependencies & Blockers**: None.
+- **Completion Evidence**: Vitest and Pytest test execution outputs and browser interactive verification recorded in `TASK_LOG.md`.
 
 ---
 

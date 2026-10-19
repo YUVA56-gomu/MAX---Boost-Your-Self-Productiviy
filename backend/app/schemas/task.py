@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 from datetime import datetime, date
 from typing import Optional, List
 
@@ -74,6 +74,27 @@ class TaskRecurrenceCreate(BaseModel):
     by_weekdays: Optional[List[int]] = None
     start_date: date
     end_date: Optional[date] = None
+
+    @field_validator("frequency")
+    @classmethod
+    def validate_frequency(cls, v: str) -> str:
+        allowed = {"daily", "weekdays", "weekly", "monthly", "custom"}
+        if v.lower() not in allowed:
+            raise ValueError(f"Frequency must be one of: {', '.join(sorted(allowed))}")
+        return v.lower()
+
+    @field_validator("interval_days")
+    @classmethod
+    def validate_interval(cls, v: int) -> int:
+        if v < 1:
+            raise ValueError("Interval days must be at least 1")
+        return v
+
+    @model_validator(mode="after")
+    def validate_dates(self) -> "TaskRecurrenceCreate":
+        if self.end_date and self.end_date < self.start_date:
+            raise ValueError("end_date cannot be earlier than start_date")
+        return self
 
 
 class TaskRecurrenceResponse(BaseModel):

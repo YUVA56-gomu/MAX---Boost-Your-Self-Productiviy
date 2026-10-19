@@ -119,8 +119,18 @@ Per project governance, every decision is explicit. **Any unresolved or intentio
 ---
 
 ### [OPEN-003]: Rich Markdown Editor Component Selection
-- **Status**: **DEFERRED TO MILESTONE 4**
-- **Context**: Evaluate TipTap (ProseMirror) vs. CodeMirror 6 for supporting notes and wikilinks during UI implementation.
+- **Status**: **RESOLVED / ACCEPTED (2026-10-19)**
+- **Context**: Evaluate rich text / Markdown editing options for task descriptions and supporting notes against project constraints: 100% offline compliance, React 19 compatibility, zero external telemetry, sub-millisecond rendering, and minimal bundle weight.
+- **Evaluation & Benchmark**:
+  - **TipTap (ProseMirror)**: Powerful WYSIWYG, but adds >350KB bundle weight, requires numerous extension packages (`@tiptap/react`, `@tiptap/starter-kit`), and has active React 19 peer-dependency warnings.
+  - **CodeMirror 6**: Excellent code editor, but heavy for basic Markdown formatting and note composition.
+  - **Marked (18.1.1) + Custom Tailored Editor**: Lightweight (<40KB), zero peer-dependency friction with React 19, sub-millisecond parsing, and supports GitHub Flavored Markdown (headings, lists, checkboxes, inline code, quotes, tables).
+- **Decision**: Adopt `marked` (18.1.1) with a custom dual-mode `MarkdownEditor` component (`frontend/src/components/ui/MarkdownEditor.tsx`) featuring:
+  - Write / Preview tabbed toggle with keyboard shortcuts.
+  - Quick-formatting toolbar buttons (Bold, Italic, Headings, Bullet Lists, Checklists `- [ ]`, Code blocks, Blockquotes).
+  - ARIA-compliant attributes (`role="tablist"`, `aria-label`, `tabIndex`).
+  - Native dark Gemini aesthetics with translucent glass styling.
+- **Consequences**: Zero React 19 peer-dependency conflicts, zero bundle bloat, instant offline rendering, and full Markdown portability across tasks and notes.
 
 ---
 
@@ -147,3 +157,17 @@ Per project governance, every decision is explicit. **Any unresolved or intentio
 ### [OPEN-005]: Cross-Device Synchronization
 - **Status**: **DEFERRED (POST-MVP)**
 - **Context**: Multi-device sync is explicitly excluded from the MVP to preserve simplicity, speed, and privacy sovereignty.
+
+---
+
+### ADR-012: Truthful Local AI Detection, Safe Supervision & Multi-State Setup Architecture
+- **Status**: **ACCEPTED (2026-10-19)**
+- **Context**: Enabling local AI intelligence requires robust, graceful onboarding on both machines with pre-configured Ollama/Gemma and completely fresh machines where neither is installed. Must avoid frontend-only port probing, false negative inferences, arbitrary shell command execution, silent background downloads, and unverified completion claims.
+- **Decision**:
+  1. **Truthful 6-State Detection**: Backend endpoint `GET /api/v1/ai/status` combines host binary checks (`shutil.which` + allowlisted filesystem paths) with HTTP probing (`/api/tags`) to distinguish `ollama_not_installed`, `ollama_stopped`, `model_missing`, `model_ready`, `inference_failed`, and `ready`.
+  2. **Safe Allowlisted Supervision**: `POST /api/v1/ai/start-service` launches exclusively allowlisted binary `[binary_path, "serve"]` with `CREATE_NO_WINDOW` on Windows. Never executes arbitrary user- or model-provided paths or commands.
+  3. **Explicit User-Approved Model Pull**: `POST /api/v1/ai/pull` downloads open-weight models only upon explicit user confirmation, disclosing ~1.6 GB size and temporary internet requirement. Rejects arbitrary model injection.
+  4. **Bounded Real Inference Verification**: `POST /api/v1/ai/test` runs a benchmark prompt against local Gemma 2 2B, measures latency, and verifies actual token generation before celebrating activation.
+  5. **Non-Blocking Sovereign Core**: "Continue without AI" allows users to dismiss setup at any point, retaining 100% access to all four core productivity pillars.
+- **Consequences**: Zero telemetry, zero cloud leakage, strict executable allowlisting, truthful state feedback, and verifiable local intelligence.
+

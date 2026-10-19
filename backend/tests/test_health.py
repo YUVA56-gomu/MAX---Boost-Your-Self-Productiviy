@@ -5,15 +5,20 @@ from backend.app.api.v1.health import check_database_status, check_ai_status
 
 
 def test_health_milestone_2_connected_state(client):
-    """Test that /api/v1/health returns healthy and database connected in Milestone 2."""
-    response = client.get("/api/v1/health")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["status"] == "healthy"
-    assert data["version"] == "0.1.0"
-    assert data["database"] == "connected"
-    assert data["ai_available"] is False
-    assert data["active_model"] is None
+    """Test that /api/v1/health returns healthy and database connected."""
+    orig_enabled = settings.ai_enabled
+    try:
+        settings.ai_enabled = False
+        response = client.get("/api/v1/health")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "healthy"
+        assert data["version"] == "0.1.0"
+        assert data["database"] == "connected"
+        assert data["ai_available"] is False
+        assert data["active_model"] is None
+    finally:
+        settings.ai_enabled = orig_enabled
 
 
 def test_database_status_truthful_connected():

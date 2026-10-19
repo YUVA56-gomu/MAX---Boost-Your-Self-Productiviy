@@ -232,12 +232,33 @@ def get_task_history(task_id: str, db: Session = Depends(get_db)):
     )
 
 
-@router.post("/{task_id}/recurring", response_model=TaskRecurrenceResponse)
-def set_task_recurrence(task_id: str, payload: TaskRecurrenceCreate, db: Session = Depends(get_db)):
-    """Configure automated recurrence schedule for a task."""
+@router.get("/{task_id}/recurring", response_model=Optional[TaskRecurrenceResponse])
+def get_task_recurrence(task_id: str, db: Session = Depends(get_db)):
+    """Get the active recurrence schedule for a task, or null if non-recurring."""
     task = db.query(Task).filter(Task.id == task_id).first()
     if not task:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+
+    if not task.recurrence_rule_id:
+        return None
+
+    return db.query(TaskRecurrenceRule).filter(TaskRecurrenceRule.id == task.recurrence_rule_id).first()
+
+
+@router.post("/{task_id}/recurring", response_model=TaskRecurrenceResponse)
+def set_task_recurrence(task_id: str, payload: TaskRecurrenceCreate, db: Session = Depends(get_db)):
+    """Configure or update automated recurrence schedule for a task."""
+    task = db.query(Task).filter(Task.id == task_id).first()
+    if not task:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+
+    # If an existing rule exists, clean it up first
+    old_rule_desc = None
+    if task.recurrence_rule_id:
+        old_rule = db.query(TaskRecurrenceRule).filter(TaskRecurrenceRule.id == task.recurrence_rule_id).first()
+        if old_rule:
+            old_rule_desc = f"{old_rule.frequency} (every {old_rule.interval_days}d)"
+            db.delete(old_rule)
 
     rule = TaskRecurrenceRule(
         workspace_id=task.workspace_id,
@@ -252,6 +273,43 @@ def set_task_recurrence(task_id: str, payload: TaskRecurrenceCreate, db: Session
     db.flush()
 
     task.recurrence_rule_id = rule.id
+
+    # Record audit history
+    new_desc = f"{payload.frequency} (every {payload.interval_days}d)"
+    history = TaskHistory(
+        task_id=task.id,
+        changed_field="recurrence",
+        old_value=old_rule_desc,
+        new_value=new_desc,
+    )
+    db.add(history)
+
     db.commit()
     db.refresh(rule)
     return rule
+
+
+@router.delete("/{task_id}/recurring", status_code=status.HTTP_204_NO_CONTENT)
+def delete_task_recurrence(task_id: str, db: Session = Depends(get_db)):
+    """Remove automated recurrence schedule from a task."""
+    task = db.query(Task).filter(Task.id == task_id).first()
+    if not task:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+
+    if task.recurrence_rule_id:
+        old_rule = db.query(TaskRecurrenceRule).filter(TaskRecurrenceRule.id == task.recurrence_rule_id).first()
+        old_desc = f"{old_rule.frequency} (every {old_rule.interval_days}d)" if old_rule else "active"
+        if old_rule:
+            db.delete(old_rule)
+        task.recurrence_rule_id = None
+
+        history = TaskHistory(
+            task_id=task.id,
+            changed_field="recurrence",
+            old_value=old_desc,
+            new_value="none",
+        )
+        db.add(history)
+        db.commit()
+
+    return None

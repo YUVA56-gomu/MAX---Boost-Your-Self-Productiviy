@@ -3,7 +3,6 @@ import {
   CheckCircle2,
   Circle,
   Clock,
-  Zap,
   Plus,
   Trash2,
   Calendar,
@@ -11,6 +10,7 @@ import {
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { CognitiveEnergyBadge } from '@/components/ui/CognitiveEnergyBadge'
 import type { Task, TaskPriority } from '@/lib/api'
 
 interface TodayTasksProps {
@@ -275,15 +275,12 @@ export const TodayTasks: React.FC<TodayTasksProps> = ({
                   {/* Priority */}
                   {getPriorityBadge(task.priority)}
 
-                  {/* Cognitive Energy Pill */}
+                  {/* Cognitive Energy Badge */}
                   {task.energy_level && (
-                    <span
-                      className="hidden sm:inline-flex items-center gap-0.5 text-[10px] text-[#94A3B8] bg-white/5 px-1.5 py-0.5 rounded border border-white/5"
-                      title={`Energy Level: ${task.energy_level}/5`}
-                    >
-                      <Zap className="w-2.5 h-2.5 text-amber-400" />
-                      <span>{task.energy_level}</span>
-                    </span>
+                    <CognitiveEnergyBadge
+                      level={task.energy_level}
+                      className="hidden sm:inline-flex"
+                    />
                   )}
 
                   {/* Estimated Minutes */}

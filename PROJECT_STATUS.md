@@ -1,10 +1,11 @@
 # Project Execution Status Dashboard
 
-**Last Updated**: `2026-10-18T23:10:00+05:30`  
+**Last Updated**: `2026-10-19T11:20:00+05:30`  
 **Overall Project Status**: `IN_PROGRESS`  
 **Active Milestone**: `Milestone 4: Product UI Implementation (Gemini-Dark Canvas)`  
 **Active Milestone Status**: **`IN_PROGRESS`** (Active Implementation)  
-**Active Task**: `Task 4.1: Dashboard Vertical Slice & Visual Branding Pass` (`COMPLETED`)
+**Active Task**: `Hacktoberfest Final Check: Five Sidebar Navigation Pages Functionality & Persistence Verification` (`COMPLETED`)
+
 
 ---
 
@@ -236,17 +237,106 @@
 
 ---
 
-## 9. Outstanding Bugs, Blockers & Known Limitations
+## 9. Milestone 4 Task Breakdown & Verified Acceptance (`IN_PROGRESS`)
+
+### Tasks & Subtasks
+- [x] **Task 4.1: Dashboard Vertical Slice & Branding Pass** (`COMPLETED`)
+  - [x] Custom MAX geometric brand mark (`MaxLogo.tsx`) with cyan/blue/indigo/purple/magenta palette.
+  - [x] HeroBanner integrated with abstract geometric hero artwork asset (`frontend/src/assets/brand/hero-artwork.png`).
+  - [x] Collapsible 240px sidebar, top header bar with quick search (`Ctrl+K`), quick task add, and workspace switcher.
+  - [x] Today's Tasks widget with priority badges, cognitive energy tags, and live status toggle.
+  - [x] Focus Engine HUD with Pomodoro timer, mode switcher, and live task attachment.
+  - [x] Velocity & Workload card with 7-day bar chart and planned vs completed metrics.
+- [x] **Part A Visual Correction: Widen & Refine Hero Quote Card** (`COMPLETED`)
+  - [x] Quote card widened to `w-full sm:w-80 md:w-88 lg:w-96` for comfortable line length.
+  - [x] Translucent glassmorphism surface (`bg-[#0B0F17]/35`, `backdrop-blur-md`, subtle `border-white/15`) allowing colorful artwork to shine through.
+  - [x] Accessible text contrast with text drop shadow; verified responsive layout.
+- [x] **Task 4.3: Tasks & Subtasks Canvas** (`COMPLETED` - **Explicitly Approved by User on 2026-10-19**)
+  - [x] Kanban view with To Do, In Progress, and Completed columns.
+  - [x] HTML5 drag-and-drop between columns persisting status changes via authenticated REST API (`updateTask`).
+  - [x] List view with segmented switch between Kanban and List layouts.
+  - [x] Parent tasks and expandable subtask tree accordions with completion status indicators.
+  - [x] Filters for status, priority, search text, and cognitive energy (⚡ 1 Low Focus to 5 Deep Work).
+  - [x] Keyboard-accessible column selection dropdown for direct keyboard navigation.
+  - [x] API failure error banner with user-friendly retry / notification messaging.
+  - [x] Dedicated unit tests in `frontend/src/components/tasks/TasksCanvas.test.tsx` (10 tests passing).
+  - [x] Integration with App navigation in `App.test.tsx` (3 tests passing).
+  - [x] Full test suite (29 frontend Vitest tests, 43 backend Pytest tests, 0 lint warnings, clean build).
+- [x] **Task 4.4: Task Details & Creation Modal (Screen 3)** (`COMPLETED`)
+  - [x] Resolved `[OPEN-003]` selecting `marked` (18.1.1) for zero peer-dependency conflicts with React 19, zero bloat (<40KB), and sub-millisecond parsing.
+  - [x] Custom `MarkdownEditor.tsx` with Write/Preview tabs, formatting toolbar (Bold, Italic, Headings, Bullet Lists, Checklists `- [ ]`, Code, Blockquotes), and ARIA compliance.
+  - [x] Recurrence rules with validated inputs (`frequency`, `interval_days`, `start_date`, `end_date`), Pydantic v2 validation error serialization with `jsonable_encoder`, backend `GET` and `DELETE /api/v1/tasks/{task_id}/recurring` endpoints, and `task_history` audit tracking.
+  - [x] Upgraded `TaskDrawer.tsx` into a polished 3-tab drawer:
+    - **Details**: Title, Markdown description editor with write/preview toggle, Priority, Cognitive Energy (⚡ 1-5), Estimate (mins), Due Date, and Save/Delete actions.
+    - **Recurrence**: Active rule status badge, frequency picker (daily, weekdays, weekly, monthly, custom), interval input, weekly weekdays selector, date range, and Save/Remove schedule buttons.
+    - **Audit History**: Chronological mutation timeline with timestamps, field pills (`title`, `description`, `status`, `priority`, `energy_level`, `recurrence`), and old -> new value tags.
+  - [x] Dedicated unit tests:
+    - `frontend/src/components/ui/MarkdownEditor.test.tsx` (4 tests passing).
+    - `frontend/src/components/dashboard/TaskDrawer.test.tsx` (4 tests passing).
+    - Backend `backend/tests/test_tasks.py` recurrence & audit tests (6 tests pass  - [x] Full test suite (37 frontend Vitest tests, 45 backend Pytest tests, 0 oxlint warnings, clean production build in 651ms).
+  - [x] Browser E2E verification: validated Markdown formatting/preview, recurrence schedule persistence, and audit history timeline display.
+- [x] **Task 4.6 (Hacktoberfest Week 2 Fast-Track): Local AI Intelligence Frontend Integration** (`COMPLETED`)
+  - [x] Added typed AI interfaces and methods to [`frontend/src/lib/api.ts`](file:///d:/SelfProductivityApp/frontend/src/lib/api.ts): `ProposedChange`, `AIDiagnosisResponse`, `AICoachRequest`, `AICoachResponse`, `AIApplyProposalRequest`, `AIApplyProposalResponse`, `AIDismissRequest`, `AIStatusResponse`, and API client functions (`fetchAIStatus`, `diagnoseProductivity`, `askAICoach`, `applyAIProposal`, `dismissAIRecommendation`, `fetchAIHistory`).
+  - [x] Implemented [`AICoachCanvas.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ai/AICoachCanvas.tsx) featuring:
+    - Truthful local AI status probe (`Gemma 2 2B Ready` or `Ollama Offline` with exact remedy command).
+    - Whole-App Productivity Diagnosis: Audits SQLite completion ratios, active workload, overdue tasks, and planning mistakes.
+    - Deterministic SQLite metrics grid (Active Tasks, Completed Tasks, Duration Ratio, Overdue).
+    - Strategic coaching guidance recommendations with honest confidence/missing data handling.
+    - Conversational productivity coach with context scoping (`all`, `tasks`, `goals`, `habits`, `focus`) and quick prompt starters.
+  - [x] Implemented [`ProposalCard.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ai/ProposalCard.tsx) embodying Human-in-the-Loop "Review & Apply" pattern:
+    - Clear visual separation of proposals from recommendations.
+    - Inline editable proposed values (adjust estimate or priority before approving).
+    - Explicit user approval button calling `applyAIProposal` (never applies automatically).
+    - Explicit user dismissal button calling `dismissAIRecommendation`.
+    - Live SQLite mutation confirmation toast with auto-refresh of workspace data.
+  - [x] Integrated navigation:
+    - Added `AI Coach` nav item with `Sparkles` icon in [`Sidebar.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/Sidebar.tsx).
+    - Wired "Want to Level Up?" sidebar promo card and button to open AI Coach.
+    - Added quick AI Coach shortcut button in [`Header.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/Header.tsx).
+  - [x] Dedicated unit tests:
+    - [`frontend/src/components/ai/ProposalCard.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ai/ProposalCard.test.tsx) (5 tests passing).
+    - [`frontend/src/components/ai/AICoachCanvas.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ai/AICoachCanvas.test.tsx) (5 tests passing).
+    - [`frontend/src/App.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/App.test.tsx) (4 tests passing).
+  - [x] Full unified test suite: 55 frontend Vitest tests, 45 backend Pytest tests passing 100%, 0 oxlint warnings, clean production build in 546ms.
+- [x] **Task 4.7: Sidebar Canvases Activation (Goals, Habits, Focus, Insights, Notes)** (`COMPLETED`)
+  - [x] Connected all 5 remaining sidebar navigation destinations with dedicated canvases and real SQLite persistence.
+  - [x] Implemented `GoalsCanvas.tsx` with milestone tracking, progress percentages, and goal deletion.
+  - [x] Implemented `HabitsCanvas.tsx` with streak tracking, frequency badges, daily check-in toggles, and habit creator.
+  - [x] Implemented `FocusCanvas.tsx` with Pomodoro/Stopwatch timer, preset intervals, task attachment, and session logs.
+  - [x] Implemented `InsightsCanvas.tsx` with 7-day workload velocity, estimation ratio, active blockers, and daily review journal.
+  - [x] Implemented `NotesCanvas.tsx` with search filtering, pinned notes, and Markdown write/preview editor.
+  - [x] Integration test suite in `frontend/src/NavigationPages.test.tsx` (6 tests passing).
+- [x] **Task 4.8: Premium Local AI Onboarding & Ollama Setup Workflow** (`COMPLETED`)
+  - [x] Implemented `AIOnboardingModal.tsx` covering all 6 distinct states: Welcome, Detecting, Ollama Missing, Ollama Stopped, Model Missing, and Activation.
+  - [x] Real system detection: backend checks system binary on disk (`shutil.which` and standard Windows/Unix locations) and probes daemon on port 11434.
+  - [x] Missing Ollama guidance: official download page (`https://ollama.com/download`), clear installation steps, user action to open download page, and "Check again" probe.
+  - [x] Stopped service recovery: safe allowlisted daemon launcher (`POST /api/v1/ai/start-service` executing `ollama serve` with `CREATE_NO_WINDOW`) and terminal fallback instructions.
+  - [x] Missing model handling: displays `gemma2:2b`, size ~1.6 GB, requires explicit user confirmation before download (`POST /api/v1/ai/pull`), genuine progress feedback, and error retry.
+  - [x] Bounded inference verification: executes live inference check (`POST /api/v1/ai/test`), measures latency, displays branded success celebration animation, and smoothly transitions to AI Coach.
+  - [x] Human-in-the-loop & non-blocking: "Continue without AI" option leaves normal MAX productivity features completely intact.
+  - [x] "AI Setup & Diagnostics" header button in `AICoachCanvas` and guided setup launcher in offline warning banner.
+  - [x] Dedicated unit tests in `frontend/src/components/ai/AIOnboardingModal.test.tsx` (7 tests passing) and `backend/tests/test_ai_onboarding.py` (10 tests passing).
+  - [x] Full unified test suite: 69 frontend Vitest tests + 55 backend Pytest tests = 124 passing tests. Production build compiles in 639ms. Zero oxlint errors.
+- [x] **Task 4.9: Final Navigation Functionality & Real Persistence Verification** (`COMPLETED`)
+  - [x] Inspected and clicked all 5 sidebar destinations (`Goals`, `Habits`, `Focus`, `Insights`, `Notes`) in live running application.
+  - [x] Verified authentic SQLite CRUD persistence on each canvas (goal milestones, habit check-in streak, focus intervals & sessions, blocker tracker & daily reviews, notes markdown editor).
+  - [x] Confirmed zero fake metrics, zero mocked data, and 100% preservation of Home, Tasks, AI Coach, and Ollama onboarding flows.
+  - [x] 124 passing tests across Pytest and Vitest; 0 lint errors, clean production bundle.
+
+---
+
+## 10. Outstanding Bugs, Blockers & Known Limitations
 
 | Item ID | Classification | Description | Impact | Target Milestone |
 | :--- | :--- | :--- | :--- | :--- |
 | **`[OPEN-001]`** | Toolchain (Resolved) | `rustc 1.99.1`, `cargo 1.99.1`, WinLibs MinGW-w64 GCC 16.2.0 installed and verified. | Resolved on 2026-10-18. | Milestone 3 (RESOLVED) |
 | **`[OPEN-002]`** | Packaging (Investigated) | Evaluated PyInstaller vs. embedded Python runtime for distribution. | Standalone installer creation deferred to Milestone 7. | Milestone 7 |
+| **`[OPEN-003]`** | Editor (Resolved) | Evaluated TipTap vs CodeMirror vs marked; selected `marked` 18.1.1 + tailored MarkdownEditor. | Resolved on 2026-10-19. | Milestone 4 (RESOLVED) |
 | **`[OPEN-004]`** | Asset (Resolved) | `dashboard-reference.png` and `geometric-artwork-reference.png` verified present in `docs/design-reference/`. | Resolved on 2026-10-18. Visual branding pass executed against approved references. | Milestone 4 (RESOLVED) |
 
 ---
 
-## 10. Architectural Decision Status Summary
+## 11. Architectural Decision Status Summary
 
 - **ADR-001 (Accepted)**: Local-first architecture with SQLite WAL mode.
 - **ADR-002 (Accepted)**: Tauri 2 desktop shell.
@@ -261,22 +351,17 @@
 - **ADR-011 (Accepted)**: Local Vector Branding & Geometric Glass Artwork Architecture.
 - **`[OPEN-001]`**: Rust toolchain installation — **`RESOLVED (ACCEPTED)`**.
 - **`[OPEN-002]`**: Production Python packaging strategy — **`INVESTIGATED / DEFERRED TO MILESTONE 7`**.
-- **`[OPEN-003]`**: Rich markdown editor component selection — **`DEFERRED TO MILESTONE 4`**.
+- **`[OPEN-003]`**: Rich markdown editor component selection — **`RESOLVED (ACCEPTED)`**.
 - **`[OPEN-004]`**: Visual design reference placement (`dashboard-reference.png`) — **`RESOLVED (ACCEPTED)`**.
 - **`[OPEN-005]`**: Multi-device cross-network synchronization — **`DEFERRED TO POST-MVP`**.
 - **`[OPEN-006]`**: Sidebar "Want to Level Up?" dismiss button — **`RESOLVED / ACCEPTED`**.
 
 ---
 
-## 11. Exact Next Recommended Action
+## 12. Exact Next Recommended Action
 
-1. **Active Implementation**: Execute **Milestone 4: Product UI Implementation (Gemini-Dark Canvas)** prioritizing the **Dashboard vertical slice**:
-   - Collapsible sidebar, workspace selector, search header, contextual details drawer.
-   - Today's tasks with priority, status, deadlines, and live completion mutations.
-   - Focus timer UI with start/pause/complete actions.
-   - Weekly activity and metric summary cards connected to live SQLite backend.
-   - Validate rendered UI against `UI.md` and `DESIGN_SYSTEM.md` specifications.
-2. **Acceptance Gate**: Run full test suites, typecheck, lint, and browser/desktop rendering before requesting gatekeeper approval.
+1. User review of the Premium Local AI Onboarding & Ollama Setup Workflow.
+2. Final submission preparation for Hacktoberfest 2026 Week 2: Side Hustle.
 
 
 

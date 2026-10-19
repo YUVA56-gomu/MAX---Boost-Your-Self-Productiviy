@@ -443,8 +443,262 @@ All engineering activities, terminal executions, file modifications, and test ve
   - Sidebar "Want to level up?" promotional card reuses the master image with a coordinated glass flare crop.
   - 100% test pass rate preserved across all suites.
 
+---
 
+### Session 13: Hero Quote Card Refinement (Part A) & Tasks Canvas Implementation (Task 4.3)
+- **Date & Time**: `2026-10-18T23:59:00+05:30`
+- **Milestone & Task**: `Milestone 4: Part A (Hero Quote Card) & Task 4.3 (Tasks & Subtasks Canvas)`
+- **User Action**:
+  - Part A: Widen and refine the hero quote card in `HeroBanner.tsx` with comfortable line lengths, translucent glassmorphism surface (`backdrop-blur-md`, subtle border, restrained shadow), and clear visibility of the hero artwork through and around the card.
+  - Part B: Implement Task 4.3 (Tasks & Subtasks Canvas) with Kanban view (To Do, In Progress, Completed), drag-and-drop between columns with live API persistence, List view with segmented switch, parent tasks and expandable subtask trees, and filters for status, priority, search text, and cognitive energy (1–5).
+- **Files Created**:
+  - [`frontend/src/components/tasks/TasksCanvas.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/tasks/TasksCanvas.tsx): Complete Kanban board and List view canvas with native HTML5 drag-and-drop, expandable subtask trees, cognitive energy badges (⚡ 1-5), priority pills, status filtering, and search input.
+  - [`frontend/src/components/tasks/TasksCanvas.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/tasks/TasksCanvas.test.tsx): Unit test suite for TasksCanvas covering Kanban column distribution, List view toggle, cognitive energy filter, priority filter, search filter, subtask expansion, and task action callbacks (9 tests passing).
+- **Files Modified**:
+  - [`frontend/src/components/dashboard/HeroBanner.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/HeroBanner.tsx): Widened quote card to `w-full sm:w-80 md:w-88 lg:w-96`, applied translucent glass surface (`bg-[#0B0F17]/35`, `backdrop-blur-md`, subtle `border-white/15`, text shadow), allowing colorful artwork to shine through.
+  - [`frontend/src/components/dashboard/Sidebar.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/Sidebar.tsx): Added `activeNavId` and `onSelectNav` props to support switching between Home and Tasks.
+  - [`frontend/src/components/dashboard/TaskDrawer.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/TaskDrawer.tsx): Added support for `parentTaskId` prop, sending `parent_id` on subtask creation.
+  - [`frontend/src/lib/api.ts`](file:///d:/SelfProductivityApp/frontend/src/lib/api.ts): Added `parent_id` to `TaskCreateInput` and `TaskUpdateInput`; added `TaskFilterOptions` with `energy_level` and `parent_id`.
+  - [`frontend/src/App.tsx`](file:///d:/SelfProductivityApp/frontend/src/App.tsx): Added `activeNavId` state, view switching between Home dashboard and Tasks Canvas, `handleUpdateTaskStatus` API persistence, and subtask drawer wiring.
+  - [`frontend/src/App.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/App.test.tsx): Added navigation test verifying seamless transition to Tasks Canvas upon clicking sidebar nav.
+  - [`IMPLEMENTATION_PLAN.md`](file:///d:/SelfProductivityApp/IMPLEMENTATION_PLAN.md): Marked Task 4.3 as `[x]` completed.
+  - [`PROJECT_STATUS.md`](file:///d:/SelfProductivityApp/PROJECT_STATUS.md): Updated active task to Task 4.3 (`COMPLETED`), updated Milestone 4 task breakdown and next recommended actions.
+- **Commands & Tests Executed**:
+  1. `pnpm -C frontend test` -> Exit 0. All 28 tests passed across 5 test files (`src/lib/auth.test.ts` 5/5, `src/components/brand/Brand.test.tsx` 3/3, `src/components/dashboard/Dashboard.test.tsx` 8/8, `src/components/tasks/TasksCanvas.test.tsx` 9/9, `src/App.test.tsx` 3/3) in 3.12s.
+  2. `pnpm -C frontend lint` -> Exit 0. `oxlint`: 0 warnings, 0 errors across 28 files in 29ms.
+  3. `pnpm -C frontend build` -> Exit 0. `tsc -b && vite build` compiled production bundle cleanly in 812ms.
+  4. `backend\.venv\Scripts\python.exe -m pytest backend/tests` -> Exit 0. All 43 passed in 4.55s.
+  5. `browser_subagent` verification -> Visual confirmation of translucent widened quote card over hero artwork, and interactive validation of Tasks Canvas (Kanban columns, List view switch, cognitive energy filter, subtasks). Captured screenshots: `hero_banner_quote_1792348097942.png` and `tasks_canvas_1792348148370.png`.
+- **Actual Results**:
+  - Quote card widened and refined with translucent glassmorphic look, comfortable line length, and clear hero artwork visibility.
+  - Dedicated Tasks Canvas fully operational with Kanban board (To Do, In Progress, Completed), drag-and-drop, List view, expandable subtasks, and cognitive energy (⚡ 1-5) filtering.
+  - All 28 frontend tests and 43 backend tests pass 100%. Milestone 4 remains `IN_PROGRESS`.
 
+---
+
+### Session 14: Task 4.3 Acceptance Review, Approval & Task 4.4 (Task Details & Creation Modal)
+- **Date & Time**: `2026-10-19T00:35:00+05:30`
+- **Milestone & Task**: `Milestone 4: Task 4.3 Review & Approval + Task 4.4 (Task Details & Creation Modal)`
+- **User Action**: Reviewed Task 4.3 acceptance criteria, verified automated test suites, confirmed live task creation, editing, Kanban drag-and-drop, List/Kanban switching, subtasks, cognitive energy filtering, and SQLite persistence after refresh. Recorded approval of Task 4.3 and authorized implementation of Task 4.4 (Task Details & Creation Modal) with markdown editor, recurrence rules, and audit history drawer.
+- **Architectural Decision Resolved**:
+  - `[OPEN-003]`: Resolved in [`DECISIONS.md`](file:///d:/SelfProductivityApp/DECISIONS.md). Selected `marked` (18.1.1) for zero peer-dependency friction with React 19, sub-millisecond parsing, and zero bloat, paired with a custom dual-mode `MarkdownEditor` component.
+- **Files Created**:
+  - [`frontend/src/components/ui/MarkdownEditor.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ui/MarkdownEditor.tsx): Custom dual-mode Markdown editor with Write and Preview tabs, formatting toolbar (Bold, Italic, Heading, Bullet List, Checklist `- [ ]`, Code Block, Blockquote), ARIA tablist accessibility, and keyboard shortcuts.
+  - [`frontend/src/components/ui/MarkdownEditor.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ui/MarkdownEditor.test.tsx): Unit test suite for MarkdownEditor covering write mode, formatting buttons, preview mode HTML rendering, and empty states (4 tests passing).
+  - [`frontend/src/components/dashboard/TaskDrawer.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/TaskDrawer.test.tsx): Unit test suite for TaskDrawer covering Details tab with Markdown editor, Recurrence tab schedule configuration, and Audit History tab mutation timeline (4 tests passing).
+- **Files Modified**:
+  - [`backend/app/schemas/task.py`](file:///d:/SelfProductivityApp/backend/app/schemas/task.py): Added Pydantic v2 validators for `TaskRecurrenceCreate` (`frequency` in `{'daily', 'weekdays', 'weekly', 'monthly', 'custom'}`, `interval_days >= 1`, and `end_date >= start_date`).
+  - [`backend/app/main.py`](file:///d:/SelfProductivityApp/backend/app/main.py): Wrapped `validation_exception_handler` error detail in `jsonable_encoder` to prevent 500 crashes on non-serializable Pydantic v2 error objects.
+  - [`backend/app/api/v1/tasks.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/tasks.py): Added `GET /api/v1/tasks/{task_id}/recurring` and `DELETE /api/v1/tasks/{task_id}/recurring` endpoints; added `TaskHistory` audit record logging on recurrence schedule updates and deletions.
+  - [`backend/tests/test_tasks.py`](file:///d:/SelfProductivityApp/backend/tests/test_tasks.py): Added backend tests for GET recurrence, DELETE recurrence, validation errors (422), and audit history logging (45 tests passing total).
+  - [`frontend/src/lib/api.ts`](file:///d:/SelfProductivityApp/frontend/src/lib/api.ts): Added TypeScript interfaces `TaskHistoryEntry`, `TaskRecurrenceRule`, and `TaskRecurrenceInput`; implemented client methods `fetchTaskHistory`, `fetchTaskRecurrence`, `setTaskRecurrence`, and `deleteTaskRecurrence`.
+  - [`frontend/src/components/dashboard/TaskDrawer.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/TaskDrawer.tsx): Completely upgraded to a 3-tab drawer (Details, Recurrence, Audit History) featuring `MarkdownEditor`, recurrence rule manager with active schedule badge and live persistence, and chronological audit history timeline.
+  - [`frontend/src/components/tasks/TasksCanvas.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/tasks/TasksCanvas.tsx): Added keyboard-accessible column selection dropdown for direct keyboard navigation.
+  - [`frontend/src/components/tasks/TasksCanvas.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/tasks/TasksCanvas.test.tsx): Added unit test for keyboard-accessible column status changes (10 tests passing).
+  - [`frontend/src/App.tsx`](file:///d:/SelfProductivityApp/frontend/src/App.tsx): Added API error state banner (`tasksError`) with dismiss button.
+  - [`DECISIONS.md`](file:///d:/SelfProductivityApp/DECISIONS.md): Updated `[OPEN-003]` to RESOLVED / ACCEPTED.
+  - [`IMPLEMENTATION_PLAN.md`](file:///d:/SelfProductivityApp/IMPLEMENTATION_PLAN.md): Checked off Task 4.4 as completed.
+  - [`PROJECT_STATUS.md`](file:///d:/SelfProductivityApp/PROJECT_STATUS.md): Recorded approval of Task 4.3 and completion of Task 4.4; updated next action.
+- **Commands & Tests Executed**:
+  1. `pnpm -C frontend test` -> Exit 0. All 37 tests passed across 7 test files (`auth.test.ts` 5/5, `Brand.test.tsx` 3/3, `MarkdownEditor.test.tsx` 4/4, `TaskDrawer.test.tsx` 4/4, `Dashboard.test.tsx` 8/8, `TasksCanvas.test.tsx` 10/10, `App.test.tsx` 3/3) in 7.16s.
+  2. `pnpm -C frontend lint` -> Exit 0. `oxlint`: 0 warnings, 0 errors across 31 files in 51ms.
+  3. `pnpm -C frontend build` -> Exit 0. `tsc -b && vite build` built production bundle in 651ms (`dist/index.html`, `dist/assets/index-NrgfGsyO.css` 62.81 kB, `dist/assets/index-CXvnuUdi.js` 406.35 kB).
+  4. `backend\.venv\Scripts\python.exe -m pytest backend/tests` -> Exit 0. All 45 tests passed in 1.89s.
+  5. `browser_subagent` verification -> Visual and interactive validation on `http://localhost:5173/`:
+     - Markdown Editor Write/Preview toggle: verified headings, bold text, and interactive task checklists (`- [ ]`, `- [x]`).
+     - Recurrence tab: verified frequency selector, interval input, and rule persistence.
+     - Audit History tab: verified chronological mutation timeline showing `created` and `status` field badges with exact timestamps.
+     - Captured artifacts: `task_details_markdown_1792350141893.png`, `task_details_recurrence_1792350180754.png`, `task_details_audit_history_1792350224489.png`, and WebP recording `task_4_4_details_modal_verification_1792350013105.webp`.
+- **Actual Results**:
+  - Task 4.3 acceptance criteria completely verified and user approval recorded.
+  - Task 4.4 (Task Details & Creation Modal) fully implemented and verified with zero regressions.
+  - All 37 frontend Vitest tests and 45 backend Pytest tests pass 100%.
+  - Milestone 4 remains **`IN_PROGRESS`** awaiting user review.
+
+---
+
+### Session 15: Cognitive Energy Badges Visual Refinement (Brain Icon & Dark-Blue Cyan Styling)
+- **Date & Time**: `2026-10-19T01:05:00+05:30`
+- **Milestone & Task**: `Milestone 4: Cognitive Energy Badges & Scale Tooltips Refinement`
+- **User Action**: Directed replacement of yellow ⚡ emoji badges with a refined, professional dark-blue badge utilizing the Lucide React `Brain` icon, thin cyan border, clearly visible numeric level, accessible scale tooltip/label (1 = low mental effort; 5 = deep-focus/high mental effort), unified across Kanban cards, List view, Today's Tasks, and Task Details drawer.
+- **Files Created**:
+  - [`frontend/src/lib/energy.ts`](file:///d:/SelfProductivityApp/frontend/src/lib/energy.ts): Centralized cognitive energy scale definitions (`ENERGY_DESCRIPTIONS`) for 1 to 5.
+  - [`frontend/src/components/ui/CognitiveEnergyBadge.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ui/CognitiveEnergyBadge.tsx): Reusable, compact, accessible cognitive energy badge featuring a subtle dark-blue surface (`bg-[#0C1A30]/80`), thin cyan border (`border-cyan-500/25`), Lucide `Brain` icon, cyan tabular level numeral, and scale tooltip / aria-label.
+  - [`frontend/src/components/ui/CognitiveEnergyBadge.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ui/CognitiveEnergyBadge.test.tsx): Unit test suite for `CognitiveEnergyBadge` verifying icon, numeric levels, clamping, tooltips, and scale explanations (5 tests passing).
+- **Files Modified**:
+  - [`frontend/src/components/tasks/TasksCanvas.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/tasks/TasksCanvas.tsx): Integrated `CognitiveEnergyBadge` in Kanban cards and List view; updated energy filter select options to remove emojis and use professional scale descriptions; added flex-wrap and shrink-0 constraints to prevent crowding at narrow widths.
+  - [`frontend/src/components/tasks/TasksCanvas.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/tasks/TasksCanvas.test.tsx): Added unit test verifying `CognitiveEnergyBadge` rendering and accessible scale tooltip on task cards (11 tests passing).
+  - [`frontend/src/components/dashboard/TodayTasks.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/TodayTasks.tsx): Replaced old yellow lightning badge with `CognitiveEnergyBadge`.
+  - [`frontend/src/components/dashboard/TaskDrawer.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/TaskDrawer.tsx): Added `CognitiveEnergyBadge` in task header; upgraded Cognitive Energy selector with 1–5 `Brain` buttons, dynamic level label, and scale helper note.
+  - [`frontend/src/components/dashboard/TaskDrawer.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/TaskDrawer.test.tsx): Added unit test verifying cognitive energy selection with `Brain` buttons and scale description (5 tests passing).
+  - [`PROJECT_STATUS.md`](file:///d:/SelfProductivityApp/PROJECT_STATUS.md): Updated timestamp and verified criteria.
+- **Commands & Tests Executed**:
+  1. `pnpm -C frontend test` -> Exit 0. All 44 tests passed across 8 test files in 7.73s.
+  2. `pnpm -C frontend lint` -> Exit 0. `oxlint`: 0 warnings, 0 errors across 34 files in 39ms.
+  3. `pnpm -C frontend build` -> Exit 0. `tsc -b && vite build` compiled production bundle in 903ms (`dist/index.html`, `dist/assets/index-wbZIcx9K.css` 64.41 kB, `dist/assets/index-Cvw6quz1.js` 408.18 kB).
+  4. `backend\.venv\Scripts\python.exe -m pytest backend/tests` -> Exit 0. All 45 backend tests passed in 4.56s.
+  5. `browser_subagent` verification -> Navigated to `http://localhost:5173/`:
+     - Verified Today's Tasks list on Home dashboard with dark-blue surface, cyan border, and Brain icon.
+     - Verified Tasks Canvas Kanban cards with clean spacing and hover scale tooltip.
+     - Verified energy filter dropdown without emojis ('Level 1 - Low mental effort' to 'Level 5 - Deep-focus / high mental effort').
+     - Verified List view table row badges matching exact styling.
+     - Verified Task Details drawer header badge and Brain selector buttons (1–5) with scale helper note.
+     - Captured screenshots: `home_dashboard_1792352078766.png`, `tasks_canvas_1792352092950.png`, `list_view_1792352195846.png`, and `cognitive_energy_task_drawer_1792352258694.png`.
+     - Captured session recording: `cognitive_energy_badges_verification_1792352057699.webp`.
+- **Actual Results**:
+  - Yellow ⚡ emoji completely removed across the entire UI.
+  - Cognitive energy badges unified across Kanban cards, List view, Today's Tasks, and Task Details drawer with the Lucide `Brain` icon, dark-blue surface (`bg-[#0C1A30]/80`), and restrained cyan accent (`border-cyan-500/25`).
+  - Accessible tooltip and label explicitly describe the scale: "1 = low mental effort; 5 = deep-focus/high mental effort".
+  - Numeric values, database schema, and API contracts strictly preserved.
+  - 100% test pass rate across 44 frontend Vitest tests and 45 backend Pytest tests.
+
+---
+
+### Session 16: Step 2 — Connecting Existing Local AI Intelligence to Frontend
+- **Date & Time**: `2026-10-19T10:05:00+05:30`
+- **Milestone & Task**: `Milestone 4 / Hacktoberfest Week 2: Local AI Frontend Integration & Whole-App Intelligence`
+- **User Action**: Directed connection of MAX's existing whole-app local AI backend (FastAPI + Ollama + Gemma 2 2B) to the frontend, incorporating typed API client methods, an accessible AI Coach canvas, whole-app productivity diagnosis, planning mistake detection, and a human-in-the-loop "Review & Apply" proposal pattern.
+- **Files Created**:
+  - [`frontend/src/components/ai/ProposalCard.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ai/ProposalCard.tsx): Reviewable proposal card component allowing users to inspect proposed modifications (entity, action, current vs proposed value, rationale), optionally adjust proposed values, and explicitly approve (`applyAIProposal`) or dismiss (`dismissAIRecommendation`) with live SQLite feedback. Never applies changes automatically.
+  - [`frontend/src/components/ai/ProposalCard.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ai/ProposalCard.test.tsx): Unit test suite for ProposalCard verifying review, edit, approve, dismiss, and error states (5 tests passing).
+  - [`frontend/src/components/ai/AICoachCanvas.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ai/AICoachCanvas.tsx): Complete AI intelligence canvas featuring truthful local AI status probing, whole-app productivity diagnosis with SQLite evidence and metrics grid, planning error banners, strategic recommendations, conversational coach with context scoping (`all`, `tasks`, `goals`, `habits`, `focus`), prompt starters, and reviewable proposal cards.
+  - [`frontend/src/components/ai/AICoachCanvas.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ai/AICoachCanvas.test.tsx): Unit test suite for AICoachCanvas verifying status probe, diagnosis, coaching, and error states (5 tests passing).
+- **Files Modified**:
+  - [`frontend/src/lib/api.ts`](file:///d:/SelfProductivityApp/frontend/src/lib/api.ts): Added TypeScript interfaces (`ProposedChange`, `AIDiagnosisResponse`, `AICoachRequest`, `AICoachResponse`, `AIApplyProposalRequest`, `AIApplyProposalResponse`, `AIDismissRequest`, `AIStatusResponse`, `AIAuditHistoryEntry`) and API client functions (`fetchAIStatus`, `diagnoseProductivity`, `askAICoach`, `applyAIProposal`, `dismissAIRecommendation`, `fetchAIHistory`).
+  - [`frontend/src/components/dashboard/Sidebar.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/Sidebar.tsx): Added `AI Coach` nav item with `Sparkles` icon to `navItems`, wired the "Want to Level Up?" promo card and action button to switch navigation to `ai-coach`.
+  - [`frontend/src/components/dashboard/Header.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/Header.tsx): Added quick-access `AI Coach` shortcut button next to `New Task`.
+  - [`frontend/src/App.tsx`](file:///d:/SelfProductivityApp/frontend/src/App.tsx): Added `AICoachCanvas` rendering when `activeNavId === 'ai-coach'`, wired `onWorkspaceDataChanged` to reload tasks and insights upon proposal application, passed `onOpenAICoach` to Header.
+  - [`frontend/src/App.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/App.test.tsx): Added navigation test verifying seamless transition to `AICoachCanvas` upon clicking `AI Coach` in sidebar (4 tests passing).
+  - [`backend/tests/test_health.py`](file:///d:/SelfProductivityApp/backend/tests/test_health.py): Ensured `test_health_milestone_2_connected_state` isolates `settings.ai_enabled` so backend health tests pass 100% with live local Ollama daemon.
+  - [`PROJECT_STATUS.md`](file:///d:/SelfProductivityApp/PROJECT_STATUS.md): Updated active task, task checklist, and next recommended actions.
+- **Commands & Tests Executed**:
+  1. `pnpm -C frontend test --run` -> Exit 0. All 55 tests passed across 10 test files (`auth.test.ts` 5/5, `Brand.test.tsx` 3/3, `CognitiveEnergyBadge.test.tsx` 5/5, `MarkdownEditor.test.tsx` 4/4, `ProposalCard.test.tsx` 5/5, `Dashboard.test.tsx` 8/8, `AICoachCanvas.test.tsx` 5/5, `TasksCanvas.test.tsx` 11/11, `TaskDrawer.test.tsx` 5/5, `App.test.tsx` 4/4) in 3.92s.
+  2. `pnpm -C frontend lint` -> Exit 0. `oxlint`: 0 warnings, 0 errors across 38 files in 34ms.
+  3. `pnpm -C frontend build` -> Exit 0. `tsc -b && vite build` built production bundle in 546ms (`dist/index.html`, `dist/assets/index-C6z3PW8_.css` 72.14 kB, `dist/assets/index-Cgn0rLim.js` 438.08 kB).
+  4. `backend\.venv\Scripts\python.exe -m pytest backend/tests` -> Exit 0. All 45 backend tests passed in 2.21s.
+- **Actual Results**:
+  - Full frontend integration of MAX's existing whole-app local AI intelligence complete.
+  - User can access AI Coach from Sidebar nav, "Want to Level Up?" promo card, or Header shortcut.
+  - Truthful local AI status probing: shows `Local Gemma 2 2B Ready` or helpful offline instructions.
+  - Whole-app productivity diagnosis identifies planning mistakes, shows factual SQLite metrics and evidence, and provides actionable recommendations.
+  - Conversational coach answers questions grounded in SQLite metrics with context scoping.
+  - Human-in-the-loop "Review & Apply" pattern prevents unilateral mutations; user can inspect, adjust, approve, or dismiss proposals.
+  - 100% test pass rate across 55 frontend Vitest tests and 45 backend Pytest tests. Zero lint warnings. Clean build.
+
+---
+
+### Session 17: Sidebar Canvases Activation (Goals, Habits, Focus, Insights, Notes)
+- **Date & Time**: `2026-10-19T10:35:00+05:30`
+- **Milestone & Task**: `Milestone 4 / Hacktoberfest Week 2: Functional Sidebar Canvases with Real SQLite Persistence`
+- **User Action**: Directed activation and implementation of the remaining 5 non-functional sidebar navigation options (Goals, Habits, Focus, Insights, Notes), connecting existing backend SQLite CRUD routers and models to high-aesthetic dark canvas interfaces.
+- **Files Created**:
+  - [`frontend/src/components/goals/GoalsCanvas.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/goals/GoalsCanvas.tsx): Goals & Milestones tracker with creation modal, progress percentage calculation, milestone toggles, and deletion.
+  - [`frontend/src/components/habits/HabitsCanvas.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/habits/HabitsCanvas.tsx): Habit tracker with streak tracking, frequency badges, daily check-in toggles, and habit creator.
+  - [`frontend/src/components/focus/FocusCanvas.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/focus/FocusCanvas.tsx): Focus engine canvas with Pomodoro/Stopwatch timer, preset selector (25/50/15m), task attachment, and session history log.
+  - [`frontend/src/components/insights/InsightsCanvas.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/insights/InsightsCanvas.tsx): Workload velocity card, estimation accuracy ratio, active blocker management, and daily review journal.
+  - [`frontend/src/components/notes/NotesCanvas.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/notes/NotesCanvas.tsx): Notes canvas with search filter, pinned notes, Markdown editor with write/preview tabs, and character counter.
+  - [`frontend/src/NavigationPages.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/NavigationPages.test.tsx): Comprehensive integration test suite verifying navigation and persistence across all 5 canvases (6 tests passing).
+- **Files Modified**:
+  - [`frontend/src/App.tsx`](file:///d:/SelfProductivityApp/frontend/src/App.tsx): Connected all 5 canvases to `activeNavId` with state refresh callbacks.
+  - [`frontend/src/lib/api.ts`](file:///d:/SelfProductivityApp/frontend/src/lib/api.ts): Added API methods for goals, habits, focus sessions, blockers, daily reviews, and notes.
+- **Commands & Tests Executed**:
+  1. `pnpm -C frontend test --run` -> Exit 0. 61 tests passed across 11 test files in 5.12s.
+  2. `pnpm -C frontend build` -> Exit 0. Built production bundle in 582ms.
+  3. `backend\.venv\Scripts\python.exe -m pytest backend/tests` -> Exit 0. All 45 backend tests passed.
+  4. `browser_subagent` visual verification -> Verified all 5 canvas screens rendered with real SQLite data.
+- **Actual Results**:
+  - All sidebar pages genuinely functional with persistent backend storage.
+  - 100% test pass rate across 61 frontend Vitest tests and 45 backend Pytest tests.
+
+---
+
+### Session 18: Premium Local AI Onboarding & Ollama Setup Flow
+- **Date & Time**: `2026-10-19T11:10:00+05:30`
+- **Milestone & Task**: `Milestone 4 / Hacktoberfest Week 2: Premium Local AI Onboarding & Ollama Setup Workflow`
+- **User Action**: Implemented a premium, truthful, local AI onboarding and Ollama setup workflow. When clicking "Let's advance with AI", MAX detects whether Ollama is installed and usable, guides installation when necessary, verifies the selected local model (`gemma2:2b`), executes a bounded test inference, and transitions into the AI Coach while preserving workspace context.
+- **Files Created**:
+  - [`frontend/src/components/ai/AIOnboardingModal.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ai/AIOnboardingModal.tsx): Complete 6-state onboarding modal featuring:
+    - **Screen A (Welcome)**: MAX multicolor brand logo, abstract geometric artwork, dark obsidian surface, explanation of 100% local open-weight model (`gemma2:2b`), "Let's advance with AI" button, and non-blocking "Continue without AI" option.
+    - **Screen B (Detection)**: Real system detection distinguishing Ollama absent, service stopped, model missing, model ready, inference failure, and activation.
+    - **Screen C (Installation Assistance)**: Explains local AI requirement, provides official download link (`https://ollama.com/download`), step-by-step guidance, and "Check again" action.
+    - **Screen D (Safe Service Launch)**: Simple problem explanation, safe launch action via strictly allowlisted supervisor (`ollama serve`), terminal command fallback, and "Check again" action.
+    - **Screen E (Model Verification & Download)**: Displays model identifier `gemma2:2b`, size ~1.6 GB, explicit user confirmation requirement, download progress state, and retry handling.
+    - **Screen F (Activate MAX Intelligence)**: Bounded real inference health check, latency measurement, branded success celebration animation, and smooth transition to AI Coach.
+  - [`frontend/src/components/ai/AIOnboardingModal.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ai/AIOnboardingModal.test.tsx): Dedicated unit tests covering all 6 detection states, installation guidance, safe service start, model pull, bounded inference test, retry, skip, and activation transition (7 tests passing).
+  - [`backend/tests/test_ai_onboarding.py`](file:///d:/SelfProductivityApp/backend/tests/test_ai_onboarding.py): Backend unit tests for AI status detection, service start, model pull, and test inference (10 tests passing).
+- **Files Modified**:
+  - [`backend/app/schemas/ai.py`](file:///d:/SelfProductivityApp/backend/app/schemas/ai.py): Added `state`, `ollama_installed`, `service_running`, `configured_model`, `model_available`, `model_size_mb`, `binary_path` to `AIStatusResponse`; added `AIStartServiceResponse`, `AIPullModelRequest`, `AIPullModelResponse`, and `AITestInferenceResponse`.
+  - [`backend/app/services/ollama_client.py`](file:///d:/SelfProductivityApp/backend/app/services/ollama_client.py): Added `find_ollama_binary()`, `check_detailed_status()`, `start_service()`, `pull_model()`, and `test_inference()`.
+  - [`backend/app/api/v1/ai.py`](file:///d:/SelfProductivityApp/backend/app/api/v1/ai.py): Enhanced `GET /api/v1/ai/status`, added `POST /api/v1/ai/start-service`, `POST /api/v1/ai/pull`, and `POST /api/v1/ai/test`.
+  - [`frontend/src/lib/api.ts`](file:///d:/SelfProductivityApp/frontend/src/lib/api.ts): Added onboarding types and API functions (`startAIService`, `pullAIModel`, `testAIInference`).
+  - [`frontend/src/App.tsx`](file:///d:/SelfProductivityApp/frontend/src/App.tsx): Integrated `AIOnboardingModal` with `max_ai_onboarding_completed` state checking, allowing smooth first-time onboarding or instant navigation when completed.
+  - [`frontend/src/components/ai/AICoachCanvas.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/ai/AICoachCanvas.tsx): Added "AI Setup & Diagnostics" header button and guided setup launcher in offline alert banner.
+  - [`frontend/src/App.test.tsx`](file:///d:/SelfProductivityApp/frontend/src/App.test.tsx): Added unit test verifying AI Onboarding Modal opens when clicking AI Coach without completed onboarding (5 tests passing).
+- **Commands & Tests Executed**:
+  1. `pnpm -C frontend test --run` -> Exit 0. All 69 tests passed across 12 test files in 5.84s.
+  2. `pnpm -C frontend lint` -> Exit 0. `oxlint`: 0 errors across 46 files in 38ms.
+  3. `pnpm -C frontend build` -> Exit 0. `tsc -b && vite build` built production bundle in 639ms.
+  4. `backend\.venv\Scripts\python.exe -m pytest backend/tests` -> Exit 0. All 55 backend tests passed in 2.65s.
+  5. `browser_subagent` verification -> Visual and interactive verification on `http://127.0.0.1:5173/`:
+     - Verified Welcome Screen (Screen A) with MAX logo, geometric artwork, "Let's advance with AI", and "Continue without AI".
+     - Clicked "Let's advance with AI": real detection and bounded Gemma inference succeeded in 5106ms.
+     - Verified Activation Screen (Screen F) with "MAX Intelligence Activated!" and "Gemma 2 2B Verified" badge.
+     - Clicked "Enter AI Coach": smoothly transitioned to AI Coach interface with active workspace ("Personal") intact.
+     - Captured screenshots `screen_a_welcome` and `screen_f_activation`, recorded video `ai_onboarding_demo_1792388303110.webp`.
+- **Actual Results**:
+  - 100% truthful, safe, local AI onboarding and setup workflow implemented and fully validated.
+  - Zero cloud leakage, zero telemetry, strict allowlisted process launching.
+  - Core productivity features completely unaffected if AI is skipped.
+  - 124 total automated tests passing (69 frontend + 55 backend). Clean build, zero lint errors.
+
+---
+
+### Session 19: Final Navigation Functionality Check
+- **Date & Time**: `2026-10-19T11:20:00+05:30`
+- **Milestone & Task**: `Hacktoberfest Final Check: Five Sidebar Navigation Pages Functionality & Persistence Verification`
+- **User Action**: Conducted rapid 10-minute diagnostic and functional audit across the five sidebar pages (`Goals`, `Habits`, `Focus`, `Insights`, `Notes`), verifying real SQLite backend persistence, zero fake metrics, and full preservation of Home, Tasks, AI Coach, and Ollama onboarding flows.
+- **Components Inspected & Verified**:
+  - [`frontend/src/components/goals/GoalsCanvas.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/goals/GoalsCanvas.tsx): Verified goals rendering (`Hacktoberfest 2026 Submission`), milestone progress bars, horizon filter tabs (*All*, *Short-Term*, *Long-Term*, *Completed*), and creation modal.
+  - [`frontend/src/components/habits/HabitsCanvas.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/habits/HabitsCanvas.tsx): Verified habit streaks, frequency badges, and interactive daily check-in toggle (*Daily Deep Work*). Tested live check-in toggle and verified SQLite persistence.
+  - [`frontend/src/components/focus/FocusCanvas.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/focus/FocusCanvas.tsx): Verified Pomodoro/Stopwatch timer HUD, interval presets (25m / 50m / 15m), active task selector, and completed session history log.
+  - [`frontend/src/components/insights/InsightsCanvas.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/insights/InsightsCanvas.tsx): Verified workload velocity chart, planned vs actual duration estimation ratio, active blocker management, and daily review journal.
+  - [`frontend/src/components/notes/NotesCanvas.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/notes/NotesCanvas.tsx): Verified notes index, search filter, pinned status, Markdown editor with write/preview tabs, and character counter.
+  - [`frontend/src/App.tsx`](file:///d:/SelfProductivityApp/frontend/src/App.tsx) & [`frontend/src/components/dashboard/Sidebar.tsx`](file:///d:/SelfProductivityApp/frontend/src/components/dashboard/Sidebar.tsx): Verified active navigation routing and state synchronization across all 7 views (`dashboard`, `tasks`, `goals`, `habits`, `focus`, `insights`, `notes`, `ai-coach`).
+- **Commands & Tests Executed**:
+  1. `browser_subagent` visual and interactive test (`final_nav_check_1792388659166.webp`):
+     - Clicked `Goals`: Verified active goal card and milestone progress (`goals_page_1792388686254.png`).
+     - Clicked `Habits`: Verified habit check-in toggle and streak persistence (`habits_page_1792388709046.png`).
+     - Clicked `Focus`: Verified Pomodoro timer, intervals, and session history (`focus_page_1792388752644.png`).
+     - Clicked `Insights`: Verified workload analytics and daily reviews (`insights_page_1792388787082.png`).
+     - Clicked `Notes`: Verified Markdown note editor and index (`notes_page_1792388840477.png`).
+     - Clicked `Home`: Verified smooth return to Dashboard hero banner and task widgets.
+  2. `pnpm -C frontend test --run` -> Exit 0. 69 tests passed across 12 test files in 5.84s.
+  3. `backend\.venv\Scripts\python.exe -m pytest backend/tests` -> Exit 0. 55 tests passed in 2.65s.
+  4. `pnpm -C frontend lint` -> Exit 0. Oxlint: 0 errors across 46 files in 38ms.
+  5. `pnpm -C frontend build` -> Exit 0. `tsc -b && vite build` built production bundle in 639ms.
+- **Actual Results**:
+  - All 5 sidebar pages are 100% functional, connected to live SQLite endpoints, and persistently storing real user data.
+  - Zero crashes, zero broken links, zero mocked/fake metrics.
+  - Home, Tasks, AI Coach, and Ollama onboarding fully preserved and operational.
+  - 124 automated tests passing (69 frontend + 55 backend). Clean build and linter.
+
+---
+
+### Session 20: AI Productivity Diagnosis Attribute Error Resolution & Live Verification
+- **Date & Time**: `2026-10-19T11:32:00+05:30`
+- **Issue**: User reported `Diagnosis could not be completed / Failed to fetch` when clicking "Diagnose Productivity".
+- **Root Cause Analysis**:
+  - `POST /api/v1/ai/diagnose` called `ProductivitySnapshot.gather_workspace_evidence`.
+  - In `backend/app/services/ai_analytics.py` (line 84), code attempted `active_habits = [h for h in all_habits if h.is_archived is False]`.
+  - The `Habit` SQLAlchemy model defines `is_active` (`bool`), not `is_archived`. Accessing `is_archived` raised an unhandled `AttributeError: 'Habit' object has no attribute 'is_archived'`, triggering HTTP 500.
+- **Fix Applied**:
+  - [`backend/app/services/ai_analytics.py`](file:///d:/SelfProductivityApp/backend/app/services/ai_analytics.py): Fixed habit active check to `active_habits = [h for h in all_habits if getattr(h, "is_active", True) is not False]`.
+  - Restarted backend sidecar with `--reload` enabled.
+- **Verification**:
+  - Issued authenticated `POST /api/v1/ai/diagnose?workspace_id=default`: returned HTTP 200 with complete Gemma 2 2B diagnosis, planning bottleneck, facts, and reviewable proposal (`prop-1`).
+  - Executed browser interactive verification via `browser_subagent`: clicked "Diagnose Productivity" in live UI. The error banner completely disappeared, and the real diagnosis output rendered on screen.
+  - Captured updated screenshot [`docs/screenshots/03_ai_coach_diagnosis.png`](file:///d:/SelfProductivityApp/docs/screenshots/03_ai_coach_diagnosis.png) and recording `verify_diagnose_fix_1792389712792.webp`.
+  - All 55 backend Pytest tests pass cleanly in 6.29s.
 
 
 

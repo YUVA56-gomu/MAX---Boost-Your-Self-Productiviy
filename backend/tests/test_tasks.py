@@ -111,3 +111,85 @@ def test_set_task_recurrence_rule(client, auth_headers):
     rule = rec_resp.json()
     assert rule["frequency"] == "weekly"
     assert rule["interval_days"] == 7
+
+    # Verify history recorded recurrence change
+    hist_resp = client.get(f"/api/v1/tasks/{task_id}/history", headers=auth_headers)
+    assert hist_resp.status_code == 200
+    fields = [h["changed_field"] for h in hist_resp.json()]
+    assert "recurrence" in fields
+
+
+def test_get_and_delete_task_recurrence(client, auth_headers):
+    """Get active recurrence rule and delete it cleanly."""
+    task_resp = client.post(
+        "/api/v1/tasks",
+        json={"workspace_id": "default", "title": "Daily Journal"},
+        headers=auth_headers,
+    )
+    task_id = task_resp.json()["id"]
+
+    # Initially non-recurring
+    get_init = client.get(f"/api/v1/tasks/{task_id}/recurring", headers=auth_headers)
+    assert get_init.status_code == 200
+    assert get_init.json() is None
+
+    # Set daily rule
+    client.post(
+        f"/api/v1/tasks/{task_id}/recurring",
+        json={"frequency": "daily", "interval_days": 1, "start_date": "2026-10-19"},
+        headers=auth_headers,
+    )
+
+    # Get active rule
+    get_rule = client.get(f"/api/v1/tasks/{task_id}/recurring", headers=auth_headers)
+    assert get_rule.status_code == 200
+    assert get_rule.json()["frequency"] == "daily"
+    assert get_rule.json()["interval_days"] == 1
+
+    # Delete recurrence
+    del_resp = client.delete(f"/api/v1/tasks/{task_id}/recurring", headers=auth_headers)
+    assert del_resp.status_code == 204
+
+    # Verify rule is now null
+    get_after = client.get(f"/api/v1/tasks/{task_id}/recurring", headers=auth_headers)
+    assert get_after.status_code == 200
+    assert get_after.json() is None
+
+
+def test_recurrence_input_validation(client, auth_headers):
+    """Pydantic rejects invalid frequencies, zero interval, or inverted dates."""
+    task_resp = client.post(
+        "/api/v1/tasks",
+        json={"workspace_id": "default", "title": "Validation Target"},
+        headers=auth_headers,
+    )
+    task_id = task_resp.json()["id"]
+
+    # Invalid frequency
+    bad_freq = client.post(
+        f"/api/v1/tasks/{task_id}/recurring",
+        json={"frequency": "yearly_invalid", "interval_days": 1, "start_date": "2026-10-19"},
+        headers=auth_headers,
+    )
+    assert bad_freq.status_code == 422
+
+    # Invalid interval
+    bad_interval = client.post(
+        f"/api/v1/tasks/{task_id}/recurring",
+        json={"frequency": "daily", "interval_days": 0, "start_date": "2026-10-19"},
+        headers=auth_headers,
+    )
+    assert bad_interval.status_code == 422
+
+    # End date before start date
+    bad_dates = client.post(
+        f"/api/v1/tasks/{task_id}/recurring",
+        json={
+            "frequency": "daily",
+            "interval_days": 1,
+            "start_date": "2026-10-19",
+            "end_date": "2026-10-18",
+        },
+        headers=auth_headers,
+    )
+    assert bad_dates.status_code == 422

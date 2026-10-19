@@ -30,11 +30,12 @@ class Settings(BaseSettings):
     # In production, Tauri generates a random token and injects it via APP_AUTH_TOKEN
     auth_token: Optional[str] = None
 
-    # Local AI (Ollama) settings - full application service scheduled for Milestone 6
-    ai_enabled: bool = False
+    # Local AI (Ollama) settings - local-first intelligence with Gemma 2 2B
+    ai_enabled: bool = True
     ollama_base_url: str = "http://127.0.0.1:11434"
     ollama_model: str = "gemma2:2b"
-    ai_probe_timeout_seconds: float = 0.5
+    ai_probe_timeout_seconds: float = 2.0
+    ai_generate_timeout_seconds: float = 45.0
 
     @model_validator(mode="after")
     def validate_auth_token_for_env(self) -> "Settings":

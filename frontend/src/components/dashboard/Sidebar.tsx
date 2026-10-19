@@ -14,6 +14,7 @@ import {
   X,
   Settings,
   ArrowRight,
+  Sparkles,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -28,6 +29,8 @@ interface SidebarProps {
   activeWorkspaceId: string
   onSelectWorkspace: (id: string) => void
   onAddWorkspace: (name: string) => Promise<void>
+  activeNavId?: string
+  onSelectNav?: (id: string) => void
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -37,6 +40,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeWorkspaceId,
   onSelectWorkspace,
   onAddWorkspace,
+  activeNavId = 'home',
+  onSelectNav,
 }) => {
   const [showAiPromo, setShowAiPromo] = useState(true)
   const [isAddingWorkspace, setIsAddingWorkspace] = useState(false)
@@ -51,13 +56,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
   }
 
   const navItems = [
-    { id: 'home', label: 'Home', icon: Home, active: true },
-    { id: 'tasks', label: 'Tasks', icon: CheckSquare, active: false },
-    { id: 'goals', label: 'Goals', icon: Target, active: false },
-    { id: 'habits', label: 'Habits', icon: Repeat, active: false },
-    { id: 'focus', label: 'Focus', icon: Timer, active: false },
-    { id: 'insights', label: 'Insights', icon: BarChart3, active: false },
-    { id: 'notes', label: 'Notes', icon: FileText, active: false },
+    { id: 'home', label: 'Home', icon: Home, active: activeNavId === 'home' },
+    { id: 'tasks', label: 'Tasks', icon: CheckSquare, active: activeNavId === 'tasks' },
+    { id: 'ai-coach', label: 'AI Coach', icon: Sparkles, active: activeNavId === 'ai-coach' },
+    { id: 'goals', label: 'Goals', icon: Target, active: activeNavId === 'goals' },
+    { id: 'habits', label: 'Habits', icon: Repeat, active: activeNavId === 'habits' },
+    { id: 'focus', label: 'Focus', icon: Timer, active: activeNavId === 'focus' },
+    { id: 'insights', label: 'Insights', icon: BarChart3, active: activeNavId === 'insights' },
+    { id: 'notes', label: 'Notes', icon: FileText, active: activeNavId === 'notes' },
   ]
 
   return (
@@ -99,6 +105,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             return (
               <button
                 key={item.id}
+                onClick={() => onSelectNav?.(item.id)}
                 className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
                   item.active
                     ? 'bg-gradient-to-r from-indigo-500/20 to-purple-500/10 text-indigo-300 border border-indigo-500/30 shadow-sm'
@@ -208,7 +215,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Bottom Right Circle Button */}
           <div className="relative z-10 flex justify-end mt-3">
             <button
-              className="w-8 h-8 rounded-full bg-[#1E293B]/90 hover:bg-[#334155] border border-white/10 flex items-center justify-center text-white transition-all shadow-sm group-hover:scale-105"
+              onClick={() => onSelectNav?.('ai-coach')}
+              className="w-8 h-8 rounded-full bg-[#1E293B]/90 hover:bg-[#334155] border border-white/10 flex items-center justify-center text-white transition-all shadow-sm group-hover:scale-105 cursor-pointer"
               title="Explore AI coach"
               aria-label="Explore AI coach"
             >

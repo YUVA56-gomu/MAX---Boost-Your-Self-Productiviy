@@ -18,6 +18,7 @@ import {
   type HealthStatus,
   type TaskCreateInput,
   type TaskUpdateInput,
+  type TaskStatus,
 } from '@/lib/api'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { Header } from '@/components/dashboard/Header'
@@ -27,6 +28,14 @@ import { TodayTasks } from '@/components/dashboard/TodayTasks'
 import { FocusTimer } from '@/components/dashboard/FocusTimer'
 import { WeeklyActivity } from '@/components/dashboard/WeeklyActivity'
 import { TaskDrawer } from '@/components/dashboard/TaskDrawer'
+import { TasksCanvas } from '@/components/tasks/TasksCanvas'
+import { AICoachCanvas } from '@/components/ai/AICoachCanvas'
+import { AIOnboardingModal } from '@/components/ai/AIOnboardingModal'
+import { GoalsCanvas } from '@/components/goals/GoalsCanvas'
+import { HabitsCanvas } from '@/components/habits/HabitsCanvas'
+import { FocusCanvas } from '@/components/focus/FocusCanvas'
+import { InsightsCanvas } from '@/components/insights/InsightsCanvas'
+import { NotesCanvas } from '@/components/notes/NotesCanvas'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -45,9 +54,34 @@ export function App() {
   const [tasksError, setTasksError] = useState<string | null>(null)
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false)
+  const [activeNavId, setActiveNavId] = useState<string>('home')
+  const [isAIOnboardingOpen, setIsAIOnboardingOpen] = useState<boolean>(false)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [parentTaskIdForNew, setParentTaskIdForNew] = useState<string | null>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
+
+  // Navigation handler that triggers onboarding if AI Coach selected and not yet onboarded
+  const handleSelectNav = useCallback((id: string) => {
+    if (id === 'ai-coach') {
+      const isCompleted = typeof window !== 'undefined' && localStorage.getItem('max_ai_onboarding_completed') === 'true'
+      if (!isCompleted) {
+        setIsAIOnboardingOpen(true)
+        return
+      }
+    }
+    setActiveNavId(id)
+  }, [])
+
+  const handleAIOnboardingComplete = useCallback(() => {
+    setIsAIOnboardingOpen(false)
+    setActiveNavId('ai-coach')
+  }, [])
+
+  const handleAIOnboardingClose = useCallback(() => {
+    setIsAIOnboardingOpen(false)
+  }, [])
+
 
   // Active workspace object
   const activeWorkspace = useMemo(
@@ -177,6 +211,37 @@ export function App() {
     }
   }
 
+  // Action: Update task status (Kanban drag-and-drop or status selector)
+  const handleUpdateTaskStatus = async (task: Task, newStatus: TaskStatus) => {
+    // Optimistic update
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === task.id
+          ? {
+              ...t,
+              status: newStatus,
+              completed_at: newStatus === 'completed' ? new Date().toISOString() : null,
+            }
+          : t
+      )
+    )
+
+    try {
+      await updateTask(task.id, {
+        status: newStatus,
+        completed_at: newStatus === 'completed' ? new Date().toISOString() : null,
+      })
+      const freshInsights = await fetchWorkloadInsights(activeWorkspaceId).catch(() => null)
+      if (freshInsights) setInsights(freshInsights)
+    } catch (err) {
+      // Rollback on failure
+      setTasks((prev) => prev.map((t) => (t.id === task.id ? task : t)))
+      const msg = err instanceof Error ? err.message : 'Failed to update task status'
+      setTasksError(msg)
+      console.error('Failed to update task status:', err)
+    }
+  }
+
   // Action: Create or Update task from Drawer
   const handleSaveTask = async (taskData: TaskCreateInput | TaskUpdateInput) => {
     if (selectedTask) {
@@ -204,6 +269,8 @@ export function App() {
       if (freshInsights) setInsights(freshInsights)
     } catch (err) {
       setTasks(previousTasks)
+      const msg = err instanceof Error ? err.message : 'Failed to delete task'
+      setTasksError(msg)
       console.error('Failed to delete task:', err)
     }
   }
@@ -219,8 +286,9 @@ export function App() {
     }
   }
 
-  // Open drawer for new task
-  const handleOpenNewTask = () => {
+  // Open drawer for new task (optional parentTaskId for subtasks)
+  const handleOpenNewTask = (parentTaskId?: string | null) => {
+    setParentTaskIdForNew(parentTaskId || null)
     setSelectedTask(null)
     setIsDrawerOpen(true)
   }
@@ -228,6 +296,7 @@ export function App() {
   // Open drawer to inspect / edit task
   const handleSelectTask = (task: Task) => {
     setSelectedTask(task)
+    setParentTaskIdForNew(task.parent_id || null)
     setIsDrawerOpen(true)
   }
 
@@ -268,6 +337,8 @@ export function App() {
         activeWorkspaceId={activeWorkspaceId}
         onSelectWorkspace={handleSelectWorkspace}
         onAddWorkspace={handleAddWorkspace}
+        activeNavId={activeNavId}
+        onSelectNav={handleSelectNav}
       />
 
       {/* Main Container */}
@@ -277,37 +348,83 @@ export function App() {
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           activeWorkspace={activeWorkspace}
-          onQuickAddTask={handleOpenNewTask}
+          onQuickAddTask={() => handleOpenNewTask(null)}
+          onOpenAICoach={() => handleSelectNav('ai-coach')}
+          backendStatus={loading ? 'checking' : error || !health ? 'disconnected' : 'connected'}
         />
 
         {/* 3. Three-Column Content Body */}
         <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-y-auto">
           {/* Center Column: Execution Canvas */}
           <main className="flex-1 min-w-0 p-6 space-y-6 overflow-y-auto">
-            {/* Hero Greeting Banner */}
-            <HeroBanner />
+            {activeNavId === 'tasks' ? (
+              <TasksCanvas
+                tasks={tasks}
+                workspaceId={activeWorkspaceId}
+                loading={tasksLoading}
+                error={tasksError}
+                onUpdateTaskStatus={handleUpdateTaskStatus}
+                onSelectTask={handleSelectTask}
+                onDeleteTask={handleDeleteTask}
+                onOpenNewTask={handleOpenNewTask}
+                onRetry={() => loadWorkspaceData(activeWorkspaceId)}
+              />
+            ) : activeNavId === 'ai-coach' ? (
+              <AICoachCanvas
+                workspaceId={activeWorkspaceId}
+                onWorkspaceDataChanged={() => loadWorkspaceData(activeWorkspaceId)}
+              />
+            ) : activeNavId === 'goals' ? (
+              <GoalsCanvas
+                workspaceId={activeWorkspaceId}
+                onGoalMutated={() => loadWorkspaceData(activeWorkspaceId)}
+              />
+            ) : activeNavId === 'habits' ? (
+              <HabitsCanvas
+                workspaceId={activeWorkspaceId}
+                onHabitMutated={() => loadWorkspaceData(activeWorkspaceId)}
+              />
+            ) : activeNavId === 'focus' ? (
+              <FocusCanvas
+                workspaceId={activeWorkspaceId}
+                onSessionCompleted={() => loadWorkspaceData(activeWorkspaceId)}
+              />
+            ) : activeNavId === 'insights' ? (
+              <InsightsCanvas
+                workspaceId={activeWorkspaceId}
+              />
+            ) : activeNavId === 'notes' ? (
+              <NotesCanvas
+                workspaceId={activeWorkspaceId}
+              />
+            ) : (
+              <>
+                {/* Hero Greeting Banner */}
+                <HeroBanner />
 
-            {/* 4 Stat Summary Cards */}
-            <StatStrip
-              tasks={tasks}
-              insights={insights}
-              goals={goals}
-              habits={habits}
-              loading={tasksLoading}
-            />
+                {/* 4 Stat Summary Cards */}
+                <StatStrip
+                  tasks={tasks}
+                  insights={insights}
+                  goals={goals}
+                  habits={habits}
+                  loading={tasksLoading}
+                />
 
-            {/* Today's Tasks Widget */}
-            <TodayTasks
-              tasks={tasks}
-              searchQuery={searchQuery}
-              loading={tasksLoading}
-              error={tasksError}
-              onToggleComplete={handleToggleComplete}
-              onSelectTask={handleSelectTask}
-              onDeleteTask={handleDeleteTask}
-              onAddTask={handleOpenNewTask}
-              onRetry={() => loadWorkspaceData(activeWorkspaceId)}
-            />
+                {/* Today's Tasks Widget */}
+                <TodayTasks
+                  tasks={tasks}
+                  searchQuery={searchQuery}
+                  loading={tasksLoading}
+                  error={tasksError}
+                  onToggleComplete={handleToggleComplete}
+                  onSelectTask={handleSelectTask}
+                  onDeleteTask={handleDeleteTask}
+                  onAddTask={() => handleOpenNewTask(null)}
+                  onRetry={() => loadWorkspaceData(activeWorkspaceId)}
+                />
+              </>
+            )}
           </main>
 
           {/* Right Column: Contextual Widget Hub */}
@@ -330,13 +447,25 @@ export function App() {
 
       {/* Contextual Task Details / Creation Drawer */}
       <TaskDrawer
-        key={selectedTask ? selectedTask.id : (isDrawerOpen ? 'drawer-open-new' : 'drawer-closed')}
+        key={selectedTask ? selectedTask.id : (isDrawerOpen ? `drawer-open-new-${parentTaskIdForNew || 'root'}` : 'drawer-closed')}
         isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
+        onClose={() => {
+          setIsDrawerOpen(false)
+          setParentTaskIdForNew(null)
+        }}
         task={selectedTask}
         workspaceId={activeWorkspaceId}
+        parentTaskId={parentTaskIdForNew}
         onSaveTask={handleSaveTask}
         onDeleteTask={handleDeleteTask}
+      />
+
+      {/* Premium Local AI Onboarding & Ollama Setup Modal */}
+      <AIOnboardingModal
+        isOpen={isAIOnboardingOpen}
+        onClose={handleAIOnboardingClose}
+        onComplete={handleAIOnboardingComplete}
+        initialStep="welcome"
       />
     </div>
   )

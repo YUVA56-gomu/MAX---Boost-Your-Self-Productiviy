@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { TodayTasks } from './TodayTasks'
 import { FocusTimer } from './FocusTimer'
 import { TaskDrawer } from './TaskDrawer'
+import { Header } from './Header'
 import type { Task } from '@/lib/api'
 
 describe('Dashboard Component Unit Tests', () => {
@@ -212,6 +213,46 @@ describe('Dashboard Component Unit Tests', () => {
         expect(screen.getByText('Task title is required.')).toBeInTheDocument()
         expect(handleSave).not.toHaveBeenCalled()
       })
+    })
+  })
+
+  describe('Header Component', () => {
+    it('renders subtle local service status indicator and Local-first label', () => {
+      render(
+        <Header
+          searchQuery=""
+          onSearchChange={vi.fn()}
+          onQuickAddTask={vi.fn()}
+          backendStatus="connected"
+        />
+      )
+
+      expect(screen.getByText('Service Ready')).toBeInTheDocument()
+      expect(screen.getByText('Local-first')).toBeInTheDocument()
+      expect(screen.queryByText('127.0.0.1:24125')).not.toBeInTheDocument()
+      expect(screen.queryByText('100% Offline')).not.toBeInTheDocument()
+    })
+
+    it('renders checking and disconnected states accurately', () => {
+      const { rerender } = render(
+        <Header
+          searchQuery=""
+          onSearchChange={vi.fn()}
+          onQuickAddTask={vi.fn()}
+          backendStatus="checking"
+        />
+      )
+      expect(screen.getByText('Connecting...')).toBeInTheDocument()
+
+      rerender(
+        <Header
+          searchQuery=""
+          onSearchChange={vi.fn()}
+          onQuickAddTask={vi.fn()}
+          backendStatus="disconnected"
+        />
+      )
+      expect(screen.getByText('Service Offline')).toBeInTheDocument()
     })
   })
 })

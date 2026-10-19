@@ -147,6 +147,181 @@ describe('App Component (Milestone 4 Dashboard)', () => {
     expect(screen.getByText('Velocity & Workload')).toBeInTheDocument()
   })
 
+  it('navigates to Tasks Canvas when clicking Tasks in sidebar', async () => {
+    const mockFetch = vi.fn().mockImplementation((url: string | URL) => {
+      const urlStr = url.toString()
+      if (urlStr.includes('/health')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ status: 'healthy', version: '0.1.0', database: 'connected', ai_available: false, active_model: null }),
+        })
+      }
+      if (urlStr.includes('/workspaces')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => [{ id: 'ws-1', name: 'Personal', slug: 'personal', color: '#6366F1', is_default: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }],
+        })
+      }
+      if (urlStr.includes('/tasks')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => [
+            {
+              id: 'task-1',
+              workspace_id: 'ws-1',
+              title: 'Finish dashboard architecture',
+              status: 'todo',
+              priority: 'high',
+              energy_level: 4,
+              estimated_minutes: 45,
+              actual_minutes: 0,
+              subtask_count: 0,
+              completed_subtask_count: 0,
+              position: 0,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
+          ],
+        })
+      }
+      return Promise.resolve({ ok: true, json: async () => [] })
+    })
+
+    vi.stubGlobal('fetch', mockFetch)
+
+    render(<App />)
+
+    // Find Tasks nav button in sidebar and click it
+    const tasksNavBtn = screen.getByText('Tasks', { selector: 'button *' }) || screen.getAllByText('Tasks')[0]
+    tasksNavBtn.click()
+
+    // Tasks Canvas should now be rendered
+    await waitFor(() => {
+      expect(screen.getByText('Tasks Canvas')).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'To Do' })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'In Progress' })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'Completed' })).toBeInTheDocument()
+    })
+  })
+
+  it('navigates to AI Coach Canvas when clicking AI Coach in sidebar', async () => {
+    const mockFetch = vi.fn().mockImplementation((url: string | URL) => {
+      const urlStr = url.toString()
+      if (urlStr.includes('/health')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            status: 'healthy',
+            version: '0.1.0',
+            database: 'connected',
+            ai_available: true,
+            active_model: 'gemma2:2b',
+          }),
+        })
+      }
+      if (urlStr.includes('/ai/status')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            enabled: true,
+            available: true,
+            active_model: 'gemma2:2b',
+            base_url: 'http://127.0.0.1:11434',
+            installed_models: ['gemma2:2b'],
+          }),
+        })
+      }
+      if (urlStr.includes('/workspaces')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => [
+            {
+              id: 'ws-1',
+              name: 'Personal',
+              slug: 'personal',
+              is_default: true,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
+          ],
+        })
+      }
+      return Promise.resolve({ ok: true, json: async () => [] })
+    })
+
+    vi.stubGlobal('fetch', mockFetch)
+    localStorage.setItem('max_ai_onboarding_completed', 'true')
+    render(<App />)
+
+    // Wait for initial render
+    await waitFor(() => {
+      expect(screen.getAllByText('AI Coach').length).toBeGreaterThan(0)
+    })
+
+    const aiCoachNavBtn = screen.getAllByText('AI Coach')[0]
+    aiCoachNavBtn.click()
+
+    // AI Coach Canvas should now be rendered
+    await waitFor(() => {
+      expect(screen.getByTestId('ai-coach-canvas')).toBeInTheDocument()
+      expect(screen.getByText('MAX Local AI Intelligence')).toBeInTheDocument()
+    })
+  })
+
+  it('opens AI Onboarding Modal when clicking AI Coach if onboarding is not completed', async () => {
+    localStorage.removeItem('max_ai_onboarding_completed')
+    const mockFetch = vi.fn().mockImplementation((url: string | URL) => {
+      const urlStr = url.toString()
+      if (urlStr.includes('/health')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            status: 'healthy',
+            version: '0.1.0',
+            database: 'connected',
+            ai_available: true,
+            active_model: 'gemma2:2b',
+          }),
+        })
+      }
+      if (urlStr.includes('/workspaces')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => [
+            {
+              id: 'ws-1',
+              name: 'Personal',
+              slug: 'personal',
+              is_default: true,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
+          ],
+        })
+      }
+      return Promise.resolve({ ok: true, json: async () => [] })
+    })
+
+    vi.stubGlobal('fetch', mockFetch)
+
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getAllByText('AI Coach').length).toBeGreaterThan(0)
+    })
+
+    const aiCoachNavBtn = screen.getAllByText('AI Coach')[0]
+    aiCoachNavBtn.click()
+
+    // AI Onboarding Modal should now be opened
+    await waitFor(() => {
+      expect(screen.getByTestId('ai-onboarding-modal')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: "Let's advance with AI" })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Continue without AI' })).toBeInTheDocument()
+    })
+  })
+
+
   it('renders waiting state when backend is unreachable', async () => {
     // Mock network failure
     const mockFetch = vi.fn().mockRejectedValue(new Error('Connection refused'))
